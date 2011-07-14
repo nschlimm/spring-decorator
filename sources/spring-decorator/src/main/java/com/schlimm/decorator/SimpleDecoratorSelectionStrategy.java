@@ -7,6 +7,7 @@ import javax.decorator.Decorator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 
@@ -16,7 +17,7 @@ public class SimpleDecoratorSelectionStrategy implements SubsequentDecoratorSele
 	@Autowired
 	private DefaultListableBeanFactory beanFactory;
 
-	public String findSuccessorBeanName(String beanName, String[] chainBeanNames) {
+	public String findSubsequentDecoratorBeanName(String beanName, List<String> chainBeanNames) {
 		List<String> orderedDecoratorNames = orderChain(chainBeanNames, (DefaultListableBeanFactory) beanFactory);
 		String nextBeanName = null;
 		boolean takeNext = false;
@@ -38,18 +39,17 @@ public class SimpleDecoratorSelectionStrategy implements SubsequentDecoratorSele
 		return nextBeanName;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<String> orderChain(String[] candidateNames, DefaultListableBeanFactory beanFactory) {
+	private List<String> orderChain(List<String> chainBeanNames, DefaultListableBeanFactory beanFactory) {
 		List<String> results = new ArrayList<String>();
 		String delegateName = null;
-		for (String candidateName : candidateNames) {
+		for (String candidateName : chainBeanNames) {
 			@SuppressWarnings("rawtypes")
 			Class beanClass = beanFactory.getType(candidateName);
-			if (beanClass.isAnnotationPresent(Decorator.class)) {
+			if (AnnotationUtils.findAnnotation(beanClass, Decorator.class)!=null) {
 				results.add(candidateName);
 			} else {
 				if (delegateName != null) {
-					throw new DelegateAwareBeanPostProcessorException("No unique bean candidate resolved for delegate! " + candidateNames);
+					throw new DelegateAwareBeanPostProcessorException("No unique bean candidate resolved for delegate! " + chainBeanNames);
 				} else {
 					delegateName = candidateName;
 				}

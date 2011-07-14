@@ -1,5 +1,7 @@
 package com.schlimm.decorator;
 
+import java.util.List;
+
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -16,6 +18,6 @@ public interface PrimaryBeanSelectionStrategy {
 	 * @param beanFactory the bean factory that contains the bean definitions
 	 * @return the decorator bean name to be injected into client references to the delegate bean
 	 */
-	String determineUniquePrimaryCandidate(String[] candidateBeanNames, BeanFactory beanFactory);
+	String determineUniquePrimaryCandidate(List<String> candidateBeanNames, BeanFactory beanFactory);
 
 }

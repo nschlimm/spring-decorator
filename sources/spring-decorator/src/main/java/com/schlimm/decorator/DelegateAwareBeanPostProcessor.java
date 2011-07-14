@@ -1,6 +1,8 @@
 package com.schlimm.decorator;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
@@ -40,7 +42,14 @@ public class DelegateAwareBeanPostProcessor implements BeanPostProcessor {
 				if (field.isAnnotationPresent(Delegate.class)) {
 					DependencyDescriptor descriptor = new DependencyDescriptor(field, true);
 					String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, descriptor.getDependencyType(), true, descriptor.isEager());
-					String beanNameOfSuccessor = selectionStrategy.findSuccessorBeanName(beanName, candidateNames);
+					// Only autowiring candidates are relevant to this (target beans of proxies are excluded)
+					List<String> autowireCandidates = new ArrayList<String>();
+					for (String candidateBeanName : candidateNames) {
+						if (((DefaultListableBeanFactory)beanFactory).getBeanDefinition(candidateBeanName).isAutowireCandidate()) {
+							autowireCandidates.add(candidateBeanName);
+						}
+					}
+					String beanNameOfSuccessor = selectionStrategy.findSubsequentDecoratorBeanName(beanName, autowireCandidates);
 					ReflectionUtils.makeAccessible(field);
 					Object successor = beanFactory.getBean(beanNameOfSuccessor);
 					try {

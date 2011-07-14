@@ -40,11 +40,11 @@ public class ChainedDecoratorAnnotationTest {
 	}
 	
 	/**
-	 * If MyDelegate is field type is autowired then MyDelegate gets injected
+	 * If MyDelegate is field type is autowired then MyDelegate (or proxy subclass) gets injected
 	 */
 	@Test
 	public void testMyDelegateFieldTypeAutowiring() {
-		Assert.isTrue(delegate.getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(delegate.getClass()));
 	}
 	
 	/**
@@ -72,11 +72,11 @@ public class ChainedDecoratorAnnotationTest {
 	}
 	
 	/**
-	 * The delegate of MyDecorator instance should be of type MyServiceInterface
+	 * The delegate of MyDecorator instance should be of type MyDelegate (or subclass -> proxy)
 	 */
 	@Test
 	public void testMyDecoratorShouldAutowireMyServiceInterface() {
-		Assert.isTrue(decoratedInterface.getDelegateInterface().getDelegateInterface().getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateInterface().getDelegateInterface().getClass()));
 	}
 	
 }

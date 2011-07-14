@@ -1,7 +1,9 @@
 package com.schlimm.decorator;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorator;
@@ -12,6 +14,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.Ordered;
 
 /**
  * This {@link BeanFactoryPostProcessor} selects the primary decorator to inject into client references to the delegate bean. In a
@@ -22,7 +26,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -40,7 +44,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		for (String name : bdNames) {
 			Class beanClass = beanFactory.getType(name);
 			// Only decorators have delegate fields declared. We want to determine the primary decorator for those delegates.
-			if (beanClass.isAnnotationPresent(Decorator.class)) {
+			if (beanClass != null && beanClass.isAnnotationPresent(Decorator.class)) {
 				Field[] fields = beanClass.getDeclaredFields();
 				for (Field field : fields) {
 					if (field.isAnnotationPresent(Delegate.class)) {
@@ -50,10 +54,17 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 						}
 						delegateTypes.add(field.getType());
 						String[] matchingBeanNames = beanFactory.getBeanNamesForType(field.getType());
-						if (matchingBeanNames.length > 1) {
+						// Need to only check beans that are candidates for autowiring (to cope with proxies ... scopedTarget is ommitted)
+						List<String> autowireCandidates = new ArrayList<String>();
+						for (String candidateBeanName : matchingBeanNames) {
+							if (((DefaultListableBeanFactory)beanFactory).getBeanDefinition(candidateBeanName).isAutowireCandidate()) {
+								autowireCandidates.add(candidateBeanName);
+							}
+						}
+						if (autowireCandidates.size() > 1) {
 							// Multiple beans are primary bean candidates for delegate injection point. Need to determine primary
 							// bean.
-							String primaryDecoratorBeanName = selectionStrategy.determineUniquePrimaryCandidate(matchingBeanNames, beanFactory);
+							String primaryDecoratorBeanName = selectionStrategy.determineUniquePrimaryCandidate(autowireCandidates, beanFactory);
 							Class primaryDecoratorBeanClass = beanFactory.getType(primaryDecoratorBeanName);
 							if (!primaryDecoratorBeanClass.isAnnotationPresent(Decorator.class)) {
 								throw new DelegateAwareBeanPostProcessorException("Expected decorator to be injected! Returned: " + primaryDecoratorBeanName + "=" + primaryDecoratorBeanClass);
@@ -68,6 +79,11 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 
 	public void setSelectionStrategy(PrimaryBeanSelectionStrategy selectionStrategy) {
 		this.selectionStrategy = selectionStrategy;
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 }

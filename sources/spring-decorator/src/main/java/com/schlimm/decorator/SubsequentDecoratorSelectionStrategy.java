@@ -1,5 +1,7 @@
 package com.schlimm.decorator;
 
+import java.util.List;
+
 /**
  * S
  * 
@@ -8,6 +10,6 @@ package com.schlimm.decorator;
  */
 public interface SubsequentDecoratorSelectionStrategy {
 
-	String findSuccessorBeanName(String beanName, String[] chainBeanNames);
+	String findSubsequentDecoratorBeanName(String beanName, List<String> chainBeanNames);
 
 }
