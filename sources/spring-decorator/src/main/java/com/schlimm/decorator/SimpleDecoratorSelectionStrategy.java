@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class SimpleDecoratorChain implements DecoratorChain {
+public class SimpleDecoratorSelectionStrategy implements SubsequentDecoratorSelectionStrategy {
 
 	@Autowired
 	private DefaultListableBeanFactory beanFactory;

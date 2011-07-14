@@ -13,6 +13,10 @@
 	</context:component-scan>
 
 	<bean class="com.schlimm.decorator.DelegateAwareBeanPostProcessor"/>
-	<bean class="com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor"/>
+	<bean class="com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor">
+		<property name="selectionStrategy">
+		   <bean class="com.schlimm.decorator.SimplePrimaryDecoratorSelectionStrategy"/>
+		</property>
+	</bean>
 	
 </beans>

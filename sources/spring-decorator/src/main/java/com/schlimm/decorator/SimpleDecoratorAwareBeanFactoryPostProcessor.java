@@ -10,25 +10,18 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 @SuppressWarnings("rawtypes")
-public class SimpleDecoratorAwareBeanFactoryPostProcessor implements
-		BeanFactoryPostProcessor {
+public class SimpleDecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	@SuppressWarnings("unchecked")
-	public void postProcessBeanFactory(
-			ConfigurableListableBeanFactory beanFactory) throws BeansException {
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String curName : beanNames) {
 			BeanDefinition bd = beanFactory.getBeanDefinition(curName);
-			try {
-				Class myDecorator = Class.forName(bd.getBeanClassName());
-				if (myDecorator.isAnnotationPresent(Decorator.class)) {
-						bd.setPrimary(true);
-				}
-			} catch (ClassNotFoundException e) {
-				logger.warn("Could not find bean class name of bean definition: "
-						+ bd.getBeanClassName());
+			Class myDecorator = beanFactory.getType(curName);
+			if (myDecorator.isAnnotationPresent(Decorator.class)) {
+				bd.setPrimary(true);
 			}
 		}
 	}

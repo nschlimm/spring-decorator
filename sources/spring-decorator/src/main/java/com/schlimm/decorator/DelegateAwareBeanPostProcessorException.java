@@ -2,6 +2,12 @@ package com.schlimm.decorator;
 
 import org.springframework.core.NestedRuntimeException;
 
+/**
+ * Exception that is thrown by decorator pattern implementation logic.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 public class DelegateAwareBeanPostProcessorException extends NestedRuntimeException {
 
 	/**

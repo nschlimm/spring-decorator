@@ -13,13 +13,25 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.util.ReflectionUtils;
 
+/**
+ * {@link BeanPostProcessor} that evaluates delegates in the decorator and injects the subsequent bean in a chained scenario.
+ * 
+ * There may be multiple decorators for one bean. In such a scenario this {@link BeanPostProcessor} selects the correct bean to
+ * inject into the decorator. The injected bean may be a subsequent decorator or the delegate bean instance itself.
+ * 
+ * Clients can implement {@link SubsequentDecoratorSelectionStrategy} to determine their own custom selection strategy for
+ * subsequent decorator in a chained scenario. By default the {@link SimpleDecoratorSelectionStrategy} is used.
+ * 
+ * @author Niklas Schlimm
+ * 
+ */
 public class DelegateAwareBeanPostProcessor implements BeanPostProcessor {
 
 	@Autowired
 	private DefaultListableBeanFactory beanFactory;
 
 	@Autowired
-	private DecoratorChain decoratorChain;
+	private SubsequentDecoratorSelectionStrategy selectionStrategy;
 
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean.getClass().isAnnotationPresent(Decorator.class)) {
@@ -28,7 +40,7 @@ public class DelegateAwareBeanPostProcessor implements BeanPostProcessor {
 				if (field.isAnnotationPresent(Delegate.class)) {
 					DependencyDescriptor descriptor = new DependencyDescriptor(field, true);
 					String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, descriptor.getDependencyType(), true, descriptor.isEager());
-					String beanNameOfSuccessor = decoratorChain.findSuccessorBeanName(beanName, candidateNames);
+					String beanNameOfSuccessor = selectionStrategy.findSuccessorBeanName(beanName, candidateNames);
 					ReflectionUtils.makeAccessible(field);
 					Object successor = beanFactory.getBean(beanNameOfSuccessor);
 					try {
