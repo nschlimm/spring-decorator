@@ -16,6 +16,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * This {@link BeanFactoryPostProcessor} selects the primary decorator to inject into client references to the delegate bean. In a
@@ -54,10 +55,11 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 						}
 						delegateTypes.add(field.getType());
 						String[] matchingBeanNames = beanFactory.getBeanNamesForType(field.getType());
-						// Need to only check beans that are candidates for autowiring (to cope with proxies ... scopedTarget is ommitted)
+						// Need to only check beans that are candidates for autowiring (to cope with proxies ... scopedTarget is
+						// ommitted)
 						List<String> autowireCandidates = new ArrayList<String>();
 						for (String candidateBeanName : matchingBeanNames) {
-							if (((DefaultListableBeanFactory)beanFactory).getBeanDefinition(candidateBeanName).isAutowireCandidate()) {
+							if (((DefaultListableBeanFactory) beanFactory).getBeanDefinition(candidateBeanName).isAutowireCandidate()) {
 								autowireCandidates.add(candidateBeanName);
 							}
 						}
@@ -66,7 +68,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 							// bean.
 							String primaryDecoratorBeanName = selectionStrategy.determineUniquePrimaryCandidate(autowireCandidates, beanFactory);
 							Class primaryDecoratorBeanClass = beanFactory.getType(primaryDecoratorBeanName);
-							if (!primaryDecoratorBeanClass.isAnnotationPresent(Decorator.class)) {
+							if (AnnotationUtils.findAnnotation(primaryDecoratorBeanClass, Decorator.class) == null) {
 								throw new DelegateAwareBeanPostProcessorException("Expected decorator to be injected! Returned: " + primaryDecoratorBeanName + "=" + primaryDecoratorBeanClass);
 							}
 							beanFactory.getBeanDefinition(primaryDecoratorBeanName).setPrimary(true);
