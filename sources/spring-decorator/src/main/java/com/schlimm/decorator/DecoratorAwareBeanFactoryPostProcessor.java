@@ -15,7 +15,7 @@ import org.springframework.core.Ordered;
  * @author Niklas Schlimm
  * 
  */
-public class AlternateDecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
+public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 

@@ -31,13 +31,13 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @author Niklas Schlimm
  * 
  */
-public class AlternateDelegateAwareBeanPostProcessor implements BeanPostProcessor, InitializingBean, BeanFactoryAware {
+public class DelegateAwareBeanPostProcessor implements BeanPostProcessor, InitializingBean, BeanFactoryAware {
 
 	private DefaultListableBeanFactory beanFactory;
 
 	private DecorationStrategy decorationStrategy;
 
-	public AlternateDelegateAwareBeanPostProcessor() {
+	public DelegateAwareBeanPostProcessor() {
 		super();
 	}
 

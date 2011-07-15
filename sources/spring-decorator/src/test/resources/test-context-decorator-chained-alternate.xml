@@ -14,8 +14,8 @@
 			expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
-	<bean class="com.schlimm.decorator.AlternateDelegateAwareBeanPostProcessor" />
-	<bean class="com.schlimm.decorator.AlternateDecoratorAwareBeanFactoryPostProcessor"/>
+	<bean class="com.schlimm.decorator.DelegateAwareBeanPostProcessor" />
+	<bean class="com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor"/>
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">
