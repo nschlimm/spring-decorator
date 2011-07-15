@@ -10,40 +10,49 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Simple implementation of {@link DecorationStrategy} that chains decorators as they are listet in the bean factory.
+ * Simple implementation of {@link DelegateDecorationStrategy} that chains decorators as they are listet in the bean factory.
+ * Supports scoped beans and CGLIB proxies.
  * 
  * @author Niklas Schlimm
- *
+ * 
  */
-public class SimpleDecorationStrategy implements DecorationStrategy {
+public class SimpleDecorationStrategy implements DelegateDecorationStrategy {
 
-	private BeanFactory beanFactory;
+	private static final String SCOPED_TARGET = "scopedTarget.";
 	
+	private BeanFactory beanFactory;
+
 	public SimpleDecorationStrategy(BeanFactory beanFactory) {
 		super();
 		this.beanFactory = beanFactory;
 	}
 
+	/**
+	 * This method implements the decoration strategy for {@link SimpleDecorationStrategy}.
+	 * 
+	 * If a decorator is a proxy object then we need to retrieve the target to do the actual injection stuff
+	 * CGLIB Proxies are interceptors, thus different objects then their targets, the successing decorator however needs
+	 * to be injected into the target bean.
+     *
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object decorateDelegate(Object delegate, SortedMap<String, Field> resolvedDecorators) {
 		Object primaryDecorator = null;
 		for (int i = 0; i < resolvedDecorators.keySet().size(); i++) {
-			Entry<String, Field> thisEntry = (Map.Entry<String, Field>)resolvedDecorators.entrySet().toArray()[i];
+			Entry<String, Field> thisEntry = (Map.Entry<String, Field>) resolvedDecorators.entrySet().toArray()[i];
 			Object thisDecorator = beanFactory.getBean(thisEntry.getKey());
 			if (primaryDecorator == null) {
 				primaryDecorator = thisDecorator;
 			}
-			// If this decorator is a proxy object then we need to retrieve the target to do the actual injection stuff
-			// CGLIB Proxies are interceptors, thus different objects then their targets
-			if (AopUtils.isCglibProxy(thisDecorator)){
-				thisDecorator = beanFactory.getBean("scopedTarget."+thisEntry.getKey());
+			if (AopUtils.isCglibProxy(thisDecorator)) {
+				thisDecorator = beanFactory.getBean(SCOPED_TARGET + thisEntry.getKey());
 			}
 			if (resolvedDecorators.keySet().size() == i + 1) {
 				inject(thisEntry.getValue(), thisDecorator, delegate);
 				break;
 			}
-			Entry<String, Field> nextEntry = (Map.Entry<String, Field>)resolvedDecorators.entrySet().toArray()[i+1];
+			Entry<String, Field> nextEntry = (Map.Entry<String, Field>) resolvedDecorators.entrySet().toArray()[i + 1];
 			Object subsequentDecorator = beanFactory.getBean(nextEntry.getKey());
 			inject(thisEntry.getValue(), thisDecorator, subsequentDecorator);
 		}
