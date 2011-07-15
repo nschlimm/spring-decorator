@@ -6,12 +6,18 @@ import java.util.Set;
 import javax.decorator.Decorator;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
+import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 
+/**
+ * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationAutowireCandidateResolver {
 
 	private BeanFactory beanFactory;

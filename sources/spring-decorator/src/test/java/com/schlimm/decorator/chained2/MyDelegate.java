@@ -7,24 +7,15 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class MyDelegate implements MyServiceInterface {
 
-	public void setDelegateClass(MyDelegate delegate) {
+	@Override
+	public String getDelegateHello() {
 		// TODO Auto-generated method stub
-		
+		return "Hello!";
 	}
 
-	public MyDelegate getDelegateClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setDelegateInterface(MyServiceInterface serviceDelegate) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public MyServiceInterface getDelegateInterface() {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	public MyServiceInterface getDelegateObject() {
+		return this;
 	}
 
 }

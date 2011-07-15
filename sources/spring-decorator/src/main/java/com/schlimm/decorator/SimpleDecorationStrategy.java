@@ -5,17 +5,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-@Component
+/**
+ * Simple implementation of {@link DecorationStrategy} that chains decorators as they are listet in the bean factory.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 public class SimpleDecorationStrategy implements DecorationStrategy {
 
-	@Autowired
 	private BeanFactory beanFactory;
 	
+	public SimpleDecorationStrategy(BeanFactory beanFactory) {
+		super();
+		this.beanFactory = beanFactory;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object decorateDelegate(Object delegate, SortedMap<String, Field> resolvedDecorators) {
@@ -25,6 +33,11 @@ public class SimpleDecorationStrategy implements DecorationStrategy {
 			Object thisDecorator = beanFactory.getBean(thisEntry.getKey());
 			if (primaryDecorator == null) {
 				primaryDecorator = thisDecorator;
+			}
+			// If this decorator is a proxy object then we need to retrieve the target to do the actual injection stuff
+			// CGLIB Proxies are interceptors, thus different objects then their targets
+			if (AopUtils.isCglibProxy(thisDecorator)){
+				thisDecorator = beanFactory.getBean("scopedTarget."+thisEntry.getKey());
 			}
 			if (resolvedDecorators.keySet().size() == i + 1) {
 				inject(thisEntry.getValue(), thisDecorator, delegate);

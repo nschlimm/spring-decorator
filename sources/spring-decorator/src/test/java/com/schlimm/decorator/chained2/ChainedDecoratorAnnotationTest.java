@@ -2,6 +2,7 @@ package com.schlimm.decorator.chained2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,42 +14,54 @@ public class ChainedDecoratorAnnotationTest {
 
 	// must be decorator
 	@Autowired 
-	private MyDelegate delegate;
-	
-	// must be decorator
-	@Autowired 
 	private MyServiceInterface decoratedInterface;
 	
 	/**
-	 * If MyDelegate is field type is autowired then MyDelegate (or proxy subclass) gets injected
+	 * Chained call functioning
 	 */
 	@Test
-	public void testMyDelegateFieldTypeAutowiring() {
-		Assert.isTrue(MyDelegate.class.isAssignableFrom(delegate.getClass()));
+	public void testChainedDecoratorsHelloWorld() {
+		Assert.isTrue(decoratedInterface.getDelegateHello().equals("Hello!"));
 	}
 	
 	/**
-	 * If the MyServiceInterface is field type then the MyDecorator2 instance should be injected
+	 * If the MyServiceInterface is field type then the (non-proxied) MyDecorator instance should be injected
 	 */
 	@Test
 	public void testMyServiceInterfaceFieldTypeAutowiring() {
-		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator3.class));
+		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator.class));
 	}
 	
 	/**
-	 * The delegate of MyDecorator2 instance should be of type MyDecorator
+	 * The delegate object of MyDecorator instance should be of (proxied) type MyDecorator3
 	 */
 	@Test
-	public void testMyDecorator2ShouldAutowireMyDecorator() {
-		Assert.isTrue(decoratedInterface.getDelegateInterface().getClass().equals(MyDecorator.class));
+	public void testMyServiceInterfaceShouldAutowireMyDecorator() {
+		Assert.isTrue(MyDecorator3.class.isAssignableFrom(decoratedInterface.getDelegateObject().getClass()));
 	}
 	
 	/**
-	 * The delegate of MyDecorator instance should be of type MyDelegate (or subclass -> proxy)
+	 * The delegate object of MyDecorator3 should be proxied MyDelegate
 	 */
 	@Test
-	public void testMyDecoratorShouldAutowireMyServiceInterface() {
-		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateInterface().getDelegateInterface().getClass()));
+	public void testMyDecoratorShouldAutowireMyDecorator3() {
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateObject().getDelegateObject().getClass()));
+	}
+	
+	/**
+	 * MyDecorator3 should be proxied
+	 */
+	@Test
+	public void testMyDecorator3ShouldBeProxied() {
+		Assert.isTrue(AopUtils.isCglibProxyClass(decoratedInterface.getDelegateObject().getClass()));
+	}
+	
+	/**
+	 * MyDelegate should be proxied
+	 */
+	@Test
+	public void testMyDelegateShouldBeProxied() {
+		Assert.isTrue(AopUtils.isCglibProxyClass(decoratedInterface.getDelegateObject().getDelegateObject().getClass()));
 	}
 	
 }

@@ -14,7 +14,6 @@
 			expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
-	<bean class="com.schlimm.decorator.SimpleDecorationStrategy" />
 	<bean class="com.schlimm.decorator.AlternateDelegateAwareBeanPostProcessor" />
 	<bean class="com.schlimm.decorator.AlternateDecoratorAwareBeanFactoryPostProcessor"/>
 
