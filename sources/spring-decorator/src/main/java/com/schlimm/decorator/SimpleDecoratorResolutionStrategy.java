@@ -21,7 +21,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * {@link DelegateAwareBeanPostProcessor}. This implementation is proxy sensitive, thus enables full proxy support.
  * Also supports subclassing of decorators.
  * 
- * @author nschlimm
+ * @author Niklas Schlimm
  * 
  */
 public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStrategy {

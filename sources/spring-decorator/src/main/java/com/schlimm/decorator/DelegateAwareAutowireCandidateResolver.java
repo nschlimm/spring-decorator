@@ -13,7 +13,10 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring.
+ * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring. 
+ * 
+ * Decorators and delegate implement the same interface. Therefore decorators are autowiring candidates. 
+ * Without this resolver dependency resolution results in ambiguous bean candidates for decorated bean.
  * 
  * @author Niklas Schlimm
  *
