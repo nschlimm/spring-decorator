@@ -19,12 +19,6 @@ public class AlternateDecoratorAwareBeanFactoryPostProcessor implements BeanFact
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/*
-	 * Selection strategy for the primary decorator in a chained scenario
-	 */
-	@SuppressWarnings("unused")
-	private PrimaryBeanSelectionStrategy selectionStrategy;
-
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		
 		DelegateAwareAutowireCandidateResolver newResolver = new DelegateAwareAutowireCandidateResolver();
@@ -33,13 +27,9 @@ public class AlternateDecoratorAwareBeanFactoryPostProcessor implements BeanFact
 
 	}
 
-	public void setSelectionStrategy(PrimaryBeanSelectionStrategy selectionStrategy) {
-		this.selectionStrategy = selectionStrategy;
-	}
-
 	@Override
 	public int getOrder() {
-		return 0;
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }

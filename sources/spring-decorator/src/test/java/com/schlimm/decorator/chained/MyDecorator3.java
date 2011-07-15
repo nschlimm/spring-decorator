@@ -1,4 +1,4 @@
-package com.schlimm.decorator.chained2;
+package com.schlimm.decorator.chained;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
