@@ -10,8 +10,9 @@ import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -30,9 +31,8 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @author Niklas Schlimm
  * 
  */
-public class AlternateDelegateAwareBeanPostProcessor implements BeanPostProcessor, InitializingBean {
+public class AlternateDelegateAwareBeanPostProcessor implements BeanPostProcessor, InitializingBean, BeanFactoryAware {
 
-	@Autowired
 	private DefaultListableBeanFactory beanFactory;
 
 	private DecorationStrategy decorationStrategy;
@@ -99,6 +99,11 @@ public class AlternateDelegateAwareBeanPostProcessor implements BeanPostProcesso
 			decorationStrategy = new SimpleDecorationStrategy(beanFactory);
 		}
 		
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = (DefaultListableBeanFactory)beanFactory;
 	}
 
 }
