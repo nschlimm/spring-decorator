@@ -26,4 +26,14 @@
 
 	<bean class="com.schlimm.decorator.SimpleDecoratorAwareBeanFactoryPostProcessor"/>
 	
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+		<property name="scopes">
+			<map>
+				<entry key="session">
+					<bean class="com.schlimm.decorator.simple.SetupSession" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
 </beans>

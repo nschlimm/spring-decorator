@@ -8,24 +8,16 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="com.schlimm.decorator.simple" scoped-proxy="targetClass">
-		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
+	<context:component-scan base-package="com.schlimm.decorator.chained2"
+		scoped-proxy="targetClass">
+		<context:include-filter type="annotation"
+			expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
-	<bean
-		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor">
-		<property name="autowiredAnnotationTypes">
-			<set>
-				<value>org.springframework.beans.factory.annotation.Autowired</value>
-				<value>org.springframework.beans.factory.annotation.Value</value>
-				<value>javax.inject.Inject</value>
-				<value>javax.decorator.Delegate</value>
-			</set>
-		</property>
-	</bean>
+	<bean class="com.schlimm.decorator.SimpleDecorationStrategy" />
+	<bean class="com.schlimm.decorator.AlternateDelegateAwareBeanPostProcessor" />
+	<bean class="com.schlimm.decorator.AlternateDecoratorAwareBeanFactoryPostProcessor"/>
 
-	<bean class="com.schlimm.decorator.SimpleDecoratorAwareBeanFactoryPostProcessor"/>
-	
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">
 			<map>
@@ -35,5 +27,5 @@
 			</map>
 		</property>
 	</bean>
-	
+
 </beans>

@@ -1,20 +1,23 @@
-package com.schlimm.decorator.chained;
+package com.schlimm.decorator.chained2;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
 @Decorator
-public class MyDecorator2 implements MyServiceInterface {
+public class MyDecorator implements MyServiceInterface {
+	
+	@Delegate
+	private MyDelegate delegateClass;
 	
 	@Delegate 
-	private com.schlimm.decorator.chained.MyServiceInterface delegateInterface;
+	private MyServiceInterface delegateInterface;
 
 	public void setDelegateClass(MyDelegate delegate) {
-		
+		this.delegateClass = delegate;
 	}
 
 	public MyDelegate getDelegateClass() {
-		return null;
+		return delegateClass;
 	}
 
 	public void setDelegateInterface(MyServiceInterface serviceDelegate) {
@@ -22,7 +25,7 @@ public class MyDecorator2 implements MyServiceInterface {
 	}
 
 	public MyServiceInterface getDelegateInterface() {
-		System.out.println("In Decorator 2");
+		System.out.println("In Decorator 1");
 		delegateInterface.getDelegateClass();
 		return delegateInterface;
 	}

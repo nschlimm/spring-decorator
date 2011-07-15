@@ -1,13 +1,13 @@
-package com.schlimm.decorator.chained;
+package com.schlimm.decorator.chained2;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
 @Decorator
-public class MyDecorator2 implements MyServiceInterface {
+public class MyDecorator3 implements MyServiceInterface {
 	
 	@Delegate 
-	private com.schlimm.decorator.chained.MyServiceInterface delegateInterface;
+	private MyServiceInterface delegateInterface;
 
 	public void setDelegateClass(MyDelegate delegate) {
 		

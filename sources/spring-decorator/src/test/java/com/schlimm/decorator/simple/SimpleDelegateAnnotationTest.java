@@ -30,7 +30,7 @@ public class SimpleDelegateAnnotationTest {
 	 */
 	@Test
 	public void testDelegateAutowiringInDecorator_DelegateClass() {
-		Assert.isTrue(decorator.getDelegateClass().getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decorator.getDelegateClass().getClass()));
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class SimpleDelegateAnnotationTest {
 	 */
 	@Test
 	public void testDelegateAutowiringInDecorator_DelegateInterface() {
-		Assert.isTrue(decorator.getDelegateInterface().getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decorator.getDelegateInterface().getClass()));
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class SimpleDelegateAnnotationTest {
 	 */
 	@Test
 	public void testDecoratorClassInjection() {
-		Assert.isTrue(delegate.getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(delegate.getClass()));
 	}
 	
 	/**
@@ -57,8 +57,8 @@ public class SimpleDelegateAnnotationTest {
 	@Test
 	public void testDecoratorInterfaceInjection() {
 		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator.class));
-		Assert.isTrue(decoratedInterface.getDelegateClass().getClass().equals(MyDelegate.class));
-		Assert.isTrue(decoratedInterface.getDelegateInterface().getClass().equals(MyDelegate.class));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateClass().getClass()));
+		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateInterface().getClass()));
 	}
 	
 }

@@ -1,4 +1,4 @@
-package com.schlimm.decorator.chained;
+package com.schlimm.decorator.chained2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,33 +7,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-@ContextConfiguration("/test-context-decorator-chained.xml")
+@ContextConfiguration("/test-context-decorator-chained-alternate.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ChainedDecoratorAnnotationTest {
 
 	// must be decorator
-	@Autowired
-	private MyDecorator decorator;
-	
-	// Must be decorator
-	@Autowired
-	private MyDecorator2 decorator2;
-
-	// must be delegate
 	@Autowired 
 	private MyDelegate delegate;
 	
 	// must be decorator
 	@Autowired 
 	private MyServiceInterface decoratedInterface;
-	
-	/**
-	 * If MyDecorator is field type is autowired then MyDecorator gets injected
-	 */
-	@Test
-	public void testMyDecoratorFieldTypeAutowiring() {
-		Assert.isTrue(decorator.getClass().equals(MyDecorator.class));
-	}
 	
 	/**
 	 * If MyDelegate is field type is autowired then MyDelegate (or proxy subclass) gets injected
@@ -44,19 +28,11 @@ public class ChainedDecoratorAnnotationTest {
 	}
 	
 	/**
-	 * If MyDecorator2 is field type is autowired then MyDecorator2 gets injected
-	 */
-	@Test
-	public void testMyDecorator2FieldTypeAutowiring() {
-		Assert.isTrue(decorator2.getClass().equals(MyDecorator2.class));
-	}
-	
-	/**
 	 * If the MyServiceInterface is field type then the MyDecorator2 instance should be injected
 	 */
 	@Test
 	public void testMyServiceInterfaceFieldTypeAutowiring() {
-		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator.class));
+		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator3.class));
 	}
 	
 	/**
@@ -64,7 +40,7 @@ public class ChainedDecoratorAnnotationTest {
 	 */
 	@Test
 	public void testMyDecorator2ShouldAutowireMyDecorator() {
-		Assert.isTrue(decoratedInterface.getDelegateInterface().getClass().equals(MyDecorator2.class));
+		Assert.isTrue(decoratedInterface.getDelegateInterface().getClass().equals(MyDecorator.class));
 	}
 	
 	/**
