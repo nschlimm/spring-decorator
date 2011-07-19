@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.ReflectionUtils;
@@ -38,6 +39,7 @@ public class SimpleDecorationStrategy implements DelegateDecorationStrategy {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object decorateDelegate(Object delegate, SortedMap<String, Field> resolvedDecorators) {
+		if (delegate.getClass().equals(ScopedProxyFactoryBean.class)) delegate = ((ScopedProxyFactoryBean)delegate).getObject();
 		Object primaryDecorator = null;
 		for (int i = 0; i < resolvedDecorators.keySet().size(); i++) {
 			Entry<String, Field> thisEntry = (Map.Entry<String, Field>) resolvedDecorators.entrySet().toArray()[i];
@@ -45,7 +47,7 @@ public class SimpleDecorationStrategy implements DelegateDecorationStrategy {
 			if (primaryDecorator == null) {
 				primaryDecorator = thisDecorator;
 			}
-			if (AopUtils.isCglibProxy(thisDecorator)) {
+			if (AopUtils.isAopProxy(thisDecorator)&&beanFactory.containsBean(SCOPED_TARGET + thisEntry.getKey())) {
 				thisDecorator = beanFactory.getBean(SCOPED_TARGET + thisEntry.getKey());
 			}
 			if (resolvedDecorators.keySet().size() == i + 1) {

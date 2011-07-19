@@ -1,16 +1,14 @@
-package com.schlimm.decorator;
+package com.schlimm.decorator.resolver;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
-
-import javax.decorator.Decorator;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
-import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring. 
@@ -25,6 +23,8 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 
 	private BeanFactory beanFactory;
 	
+	private List<QualifiedDecoratorChain> decoratorChains;
+	
 	public DelegateAwareAutowireCandidateResolver() {
 		super();
 	}
@@ -38,11 +38,33 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 	}
 
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		return super.isAutowireCandidate(bdHolder, descriptor) && AnnotationUtils.findAnnotation(beanFactory.getType(bdHolder.getBeanName()),Decorator.class)==null;
+		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
+		boolean chainOK = false;
+		if (isDecorated(descriptor)) {
+			QualifiedDecoratorChain chain = getDecoratorChain(descriptor);
+			chainOK = chain.validateAutowireCandidate(bdHolder, descriptor);
+		}
+		return  rawResult && chainOK;
 	}
 
 	public boolean isAutowireCandidate2(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		return super.isAutowireCandidate(bdHolder, descriptor);
+	}
+	
+	public boolean isDecorated(DependencyDescriptor descriptor) {
+		QualifiedDependencyDescription qDesc = new QualifiedDependencyDescription(descriptor);
+		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
+			if (decoratorChain.getQualifiedDependencyDescription().equals(qDesc)) return true;
+		}
+		return false;
+	}
+	
+	public QualifiedDecoratorChain getDecoratorChain(DependencyDescriptor descriptor) {
+		QualifiedDependencyDescription qDesc = new QualifiedDependencyDescription(descriptor);
+		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
+			if (decoratorChain.getQualifiedDependencyDescription().equals(qDesc)) return decoratorChain;
+		}
+		return null;
 	}
 	
 	public BeanFactory getBeanFactory() {
@@ -51,5 +73,13 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 
 	public void setBeanFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+	}
+
+	public List<QualifiedDecoratorChain> getDecoratorChains() {
+		return decoratorChains;
+	}
+
+	public void setDecoratorChains(List<QualifiedDecoratorChain> decoratorChains) {
+		this.decoratorChains = decoratorChains;
 	}
 }

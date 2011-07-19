@@ -3,9 +3,12 @@ package com.schlimm.decorator;
 import java.lang.reflect.Field;
 import java.util.SortedMap;
 
+import javax.decorator.Decorator;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -37,6 +40,9 @@ public class DelegateAwareBeanPostProcessor implements BeanPostProcessor, Initia
 	}
 
 	public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+		if ((beanFactory.findAnnotationOnBean(beanName, Decorator.class) != null)||bean instanceof FactoryBean) {
+			return bean;
+		}
 		final SortedMap<String, Field> resolvedDecorators = decoratorResolutionStrategy.resolveDecorators(bean, beanName);
 		if (resolvedDecorators.size() > 0) {
 			return decorationStrategy.decorateDelegate(bean, resolvedDecorators);
