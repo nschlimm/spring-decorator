@@ -1,5 +1,6 @@
 package com.schlimm.decorator;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.decorator.Decorator;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.NoOp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,6 +83,11 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	private Map<String, Class> getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, QualifiedDecoratorChain chain) {
 		DelegateField arbitraryDelegateField = chain.getArbitraryDelegateField();
 		DependencyDescriptor dependencyDescriptor = new DependencyDescriptor(arbitraryDelegateField.getDelegateField(), true);
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(DependencyDescriptor.class);
+		enhancer.setCallback(NoOp.INSTANCE);
+		enhancer.setInterfaces(new Class[]{DelegateDependencyDescriptorTag.class});
+		DependencyDescriptor desc = (DependencyDescriptor)enhancer.create(new Class[]{Field.class, boolean.class}, new Object[]{arbitraryDelegateField.getDelegateField(),true});
 		String[] bdNames = beanFactory.getBeanDefinitionNames();
 		Map<String, Class> registeredDelegates = new HashMap<String, Class>();
 		for (String bdName : bdNames) {
@@ -94,7 +103,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			}
 			if (!DecoratorInfo.isDecorator(beanClass)) {
 				BeanDefinitionHolder beanDefinitionHolder = new BeanDefinitionHolder(beanFactory.getBeanDefinition(bdName), bdName);
-				if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(bdName, dependencyDescriptor))) {
+				if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(bdName, desc))) {
 					if ((beanFactory.getBeanDefinition(bdName).getRole() == BeanDefinition.ROLE_APPLICATION) || beanClass.equals(ScopedProxyFactoryBean.class)) {
 						registeredDelegates.put(bdName, beanClass);
 					}

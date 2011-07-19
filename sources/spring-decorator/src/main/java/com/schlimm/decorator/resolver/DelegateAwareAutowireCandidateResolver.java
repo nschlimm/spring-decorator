@@ -10,6 +10,8 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
 
+import com.schlimm.decorator.DelegateDependencyDescriptorTag;
+
 /**
  * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring. 
  * 
@@ -39,6 +41,7 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
+		if (descriptor instanceof DelegateDependencyDescriptorTag) return rawResult;
 		boolean chainOK = false;
 		if (isDecorated(descriptor)) {
 			QualifiedDecoratorChain chain = getDecoratorChain(descriptor);
