@@ -2,7 +2,6 @@ package com.schlimm.decorator;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +15,6 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -71,25 +68,24 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 					chain.addDecoratorInfo(decoratorInformation);
 				}
 			}
-			chain.setQualifiedDependencyDescription(qualifiedDependencyDescription);
-			Map<String, Class> delegate = getRegisteredDelegate(beanFactory, chain);
-			chain.setDelegateBeanDefinitionHolder(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegate.keySet().iterator().next()), delegate.keySet().iterator().next()));
+			chain.setQualifiedDelegateDependencyDescription(qualifiedDependencyDescription);
+			List<String> delegates = getRegisteredDelegate(beanFactory, chain);
+			chain.setDelegateBeanDefinitionHolder(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegates.get(0)), delegates.get(0)));
 			chains.add(chain);
 		}
 		newResolver.setDecoratorChains(chains);
 
 	}
 
-	private Map<String, Class> getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, QualifiedDecoratorChain chain) {
+	private List<String> getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, QualifiedDecoratorChain chain) {
 		DelegateField arbitraryDelegateField = chain.getArbitraryDelegateField();
-		DependencyDescriptor dependencyDescriptor = new DependencyDescriptor(arbitraryDelegateField.getDelegateField(), true);
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(DependencyDescriptor.class);
 		enhancer.setCallback(NoOp.INSTANCE);
-		enhancer.setInterfaces(new Class[]{DelegateDependencyDescriptorTag.class});
-		DependencyDescriptor desc = (DependencyDescriptor)enhancer.create(new Class[]{Field.class, boolean.class}, new Object[]{arbitraryDelegateField.getDelegateField(),true});
-		String[] bdNames = beanFactory.getBeanDefinitionNames();
-		Map<String, Class> registeredDelegates = new HashMap<String, Class>();
+		enhancer.setInterfaces(new Class[] { DelegateDependencyDescriptorTag.class });
+		DependencyDescriptor desc = (DependencyDescriptor) enhancer.create(new Class[] { Field.class, boolean.class }, new Object[] { arbitraryDelegateField.getDelegateField(), true });
+		String[] bdNames = beanFactory.getBeanNamesForType(arbitraryDelegateField.getDelegateField().getType(), true, false);
+		List<String> registeredDelegates = new ArrayList<String>();
 		for (String bdName : bdNames) {
 			Class beanClass = null;
 			try {
@@ -102,11 +98,9 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 				e.printStackTrace();
 			}
 			if (!DecoratorInfo.isDecorator(beanClass)) {
-				BeanDefinitionHolder beanDefinitionHolder = new BeanDefinitionHolder(beanFactory.getBeanDefinition(bdName), bdName);
+				if (bdName.startsWith("scopedTarget.")) bdName = bdName.replace("scopedTarget.", "");
 				if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(bdName, desc))) {
-					if ((beanFactory.getBeanDefinition(bdName).getRole() == BeanDefinition.ROLE_APPLICATION) || beanClass.equals(ScopedProxyFactoryBean.class)) {
-						registeredDelegates.put(bdName, beanClass);
-					}
+					registeredDelegates.add(bdName);
 				}
 			}
 		}
