@@ -1,8 +1,6 @@
 package com.schlimm.decorator;
 
-import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * {@link DecoratorResolutionStrategy} to implement resolution logic to find decorators for the bean processed in
@@ -13,8 +11,6 @@ import java.util.SortedMap;
  */
 public interface DecoratorResolutionStrategy {
 
-	SortedMap<String, Field> resolveDecorators(final Object bean, final String beanName);
-	
 	@SuppressWarnings("rawtypes")
 	Map<String, Class> getRegisteredDecorators();
 

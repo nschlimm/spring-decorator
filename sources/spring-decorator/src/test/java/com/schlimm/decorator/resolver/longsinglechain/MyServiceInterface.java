@@ -1,8 +1,7 @@
-package com.schlimm.decorator.aop;
+package com.schlimm.decorator.resolver.longsinglechain;
 
 public interface MyServiceInterface {
 
 	public MyServiceInterface getDelegateObject();
-	public String getDelegateHello();
-	
+	public String sayHello();
 }

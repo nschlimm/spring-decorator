@@ -63,9 +63,11 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 					chain = qualifiedDecoratorChain;
 				}
 			}
-			if (chain == null) chain = new QualifiedDecoratorChain(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegate), delegate));
+			if (chain == null) {
+				chain = new QualifiedDecoratorChain(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegate), delegate));
+				chains.add(chain);
+			}
 			chain.addDecoratorInfo(newDecoratorInfo);
-			chains.add(chain);
 		}
 		newResolver.setDecoratorChains(chains);
 

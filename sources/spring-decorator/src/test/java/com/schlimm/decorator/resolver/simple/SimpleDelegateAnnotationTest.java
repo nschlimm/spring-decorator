@@ -1,4 +1,4 @@
-package com.schlimm.decorator.simple;
+package com.schlimm.decorator.resolver.simple;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 
 
 
-@ContextConfiguration("/test-context-decorator-simple.xml")
+@ContextConfiguration("/test-context-decorator-resolver-simple.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SimpleDelegateAnnotationTest {
 

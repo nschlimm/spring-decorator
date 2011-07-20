@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.decorator.resolver.simple;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;

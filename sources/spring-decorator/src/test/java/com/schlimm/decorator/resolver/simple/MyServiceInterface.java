@@ -1,4 +1,4 @@
-package com.schlimm.decorator.simple;
+package com.schlimm.decorator.resolver.simple;
 
 public interface MyServiceInterface {
 

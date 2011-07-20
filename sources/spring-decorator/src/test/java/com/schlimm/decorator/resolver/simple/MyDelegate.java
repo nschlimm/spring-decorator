@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.decorator.resolver.simple;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

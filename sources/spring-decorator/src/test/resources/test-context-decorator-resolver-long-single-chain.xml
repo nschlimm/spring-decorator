@@ -8,17 +8,18 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="com.schlimm.decorator.chained"
-		scoped-proxy="targetClass">
-		<context:include-filter type="annotation"
-			expression="javax.decorator.Decorator" />
+	<context:component-scan base-package="com.schlimm.decorator.resolver.longsinglechain" scoped-proxy="targetClass">
+		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
-	<bean class="com.schlimm.decorator.SimpleDecoratorSelectionStrategy" />
-	<bean class="com.schlimm.decorator.DelegateAwareBeanPostProcessor" />
-	<bean class="com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor">
-		<property name="selectionStrategy">
-			<bean class="com.schlimm.decorator.SimplePrimaryDecoratorSelectionStrategy" />
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor">
+		<property name="autowiredAnnotationTypes">
+			<set>
+				<value>org.springframework.beans.factory.annotation.Autowired</value>
+				<value>org.springframework.beans.factory.annotation.Value</value>
+				<value>javax.inject.Inject</value>
+			</set>
 		</property>
 	</bean>
 
@@ -26,10 +27,10 @@
 		<property name="scopes">
 			<map>
 				<entry key="session">
-					<bean class="com.schlimm.decorator.simple.SetupSession" />
+					<bean class="com.schlimm.decorator.testsupport.SetupSession" />
 				</entry>
 			</map>
 		</property>
 	</bean>
-
+	
 </beans>

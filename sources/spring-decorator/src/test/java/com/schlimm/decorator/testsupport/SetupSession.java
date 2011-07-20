@@ -1,4 +1,4 @@
-package com.schlimm.decorator.simple;
+package com.schlimm.decorator.testsupport;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.mock.web.MockHttpServletRequest;

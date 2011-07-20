@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.decorator.resolver.simple;
 
 
 public class DelegateAwareAutowireCandidateResolverTest {

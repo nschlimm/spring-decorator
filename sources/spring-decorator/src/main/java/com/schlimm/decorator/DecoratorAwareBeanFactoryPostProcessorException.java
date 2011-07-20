@@ -8,18 +8,18 @@ import org.springframework.core.NestedRuntimeException;
  * @author Niklas Schlimm
  *
  */
-public class DelegateAwareBeanPostProcessorException extends NestedRuntimeException {
+public class DecoratorAwareBeanFactoryPostProcessorException extends NestedRuntimeException {
 
 	/**
 	 * Unique ID
 	 */
 	private static final long serialVersionUID = -2241526745257996175L;
 
-	public DelegateAwareBeanPostProcessorException(String msg, Throwable cause) {
+	public DecoratorAwareBeanFactoryPostProcessorException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 
-	public DelegateAwareBeanPostProcessorException(String msg) {
+	public DecoratorAwareBeanFactoryPostProcessorException(String msg) {
 		super(msg);
 	}
 

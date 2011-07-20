@@ -1,4 +1,4 @@
-package com.schlimm.decorator.chained;
+package com.schlimm.decorator.resolver.longsinglechain;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
@@ -15,8 +15,8 @@ public class MyDecorator implements MyServiceInterface {
 	}
 
 	@Override
-	public String getDelegateHello() {
-		return delegateInterface.getDelegateHello();
+	public String sayHello() {
+		return delegateInterface.sayHello();
 	}
 
 }

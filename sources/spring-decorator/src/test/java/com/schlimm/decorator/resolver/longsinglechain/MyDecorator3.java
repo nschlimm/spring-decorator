@@ -1,12 +1,9 @@
-package com.schlimm.decorator.chained;
+package com.schlimm.decorator.resolver.longsinglechain;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
-import org.springframework.context.annotation.Scope;
-
 @Decorator
-@Scope("session")
 public class MyDecorator3 implements MyServiceInterface {
 	
 	@Delegate 
@@ -18,8 +15,10 @@ public class MyDecorator3 implements MyServiceInterface {
 	}
 
 	@Override
-	public String getDelegateHello() {
-		return delegateInterface.getDelegateHello();
+	public String sayHello() {
+		return delegateInterface.sayHello();
 	}
+
+
 
 }
