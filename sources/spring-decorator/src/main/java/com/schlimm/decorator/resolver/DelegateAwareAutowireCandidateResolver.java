@@ -70,8 +70,8 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 			// Descriptor refers to a decorated target bean => bdHolder bean name must match last decorator bean name of the
 			// decorator chain
 			QualifiedDecoratorChain chain = getDecoratorChainForDecoratedInjectionPoint(descriptor);
-			DecoratorInfo lastDecoratorInfo = chain.getDecorators().get(chain.getDecorators().size() - 1);
-			if (lastDecoratorInfo.getDecoratorBeanDefinitionHolder().getBeanName().equals(bdHolder.getBeanName())) {
+			DecoratorInfo firstDecoratorInfo = chain.getDecorators().get(0);
+			if (firstDecoratorInfo.getDecoratorBeanDefinitionHolder().getBeanName().equals(bdHolder.getBeanName())) {
 				return true;
 			}
 		} else if (isDecorator(descriptor)) {

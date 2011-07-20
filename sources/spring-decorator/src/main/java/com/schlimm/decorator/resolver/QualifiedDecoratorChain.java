@@ -45,12 +45,13 @@ public class QualifiedDecoratorChain {
 		// Both decorators?
 		for (int i = 0; i < decorators.size() - 1; i++) {
 			if (decorators.get(i).getDeclaredDelegateFields().contains(predecessorDescriptor.getField())) {
-				if (successorDefinition.getBeanName().equals(decorators.get(i+1).getDecoratorBeanDefinitionHolder().getBeanDefinition())) {
+				if (successorDefinition.getBeanName().equals(decorators.get(i+1).getDecoratorBeanDefinitionHolder().getBeanName())) {
 					// Sequential decorators if predessessor matches decorator i and successor matches decorator i + 1
 					return true;
 				}
 			}
 		}
+		System.out.println();
 		return false;
 	}
 
