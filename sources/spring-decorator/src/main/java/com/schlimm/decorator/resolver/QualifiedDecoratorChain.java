@@ -1,7 +1,10 @@
 package com.schlimm.decorator.resolver;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -9,12 +12,6 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 public class QualifiedDecoratorChain {
 
 	List<DecoratorInfo> decorators = new ArrayList<DecoratorInfo>();
-
-	/**
-	 * Dependency descriptor that identifies the delegate of the contained decorators. Every decorator in the chain has a
-	 * reference to this delegate.
-	 */
-	private QualifiedDependencyDescription qualifiedDelegateDependencyDescription;
 
 	/**
 	 * The bean definition of the target delegate that matches the qualified dependency description.
@@ -25,9 +22,9 @@ public class QualifiedDecoratorChain {
 		return decorators;
 	}
 
-	public QualifiedDecoratorChain(QualifiedDependencyDescription qualifiedDependencyDescription) {
+	public QualifiedDecoratorChain(BeanDefinitionHolder delegateBeanDefinitionHolder) {
 		super();
-		this.qualifiedDelegateDependencyDescription = qualifiedDependencyDescription;
+		this.delegateBeanDefinitionHolder = delegateBeanDefinitionHolder;
 	}
 
 	public void setDecorators(List<DecoratorInfo> decorators) {
@@ -41,25 +38,17 @@ public class QualifiedDecoratorChain {
 		}
 		// Is the successor the target delegate bean?
 		if (successorDefinition.getBeanName().equals(delegateBeanDefinitionHolder.getBeanName())) {
-			// The the predessessor must be the last decorator => to be sequential
+			// The predessessor must be the last decorator => to be sequential
 			DecoratorInfo lastDecoratorInfo = decorators.get(decorators.size() - 1);
-			return decoratorMatchesDescriptor(predecessorDescriptor, lastDecoratorInfo);
+			return lastDecoratorInfo.getDeclaredDelegateFields().contains(predecessorDescriptor.getField());
 		}
+		// Both decorators?
 		for (int i = 0; i < decorators.size() - 1; i++) {
-			if (decoratorMatchesDescriptor(predecessorDescriptor, decorators.get(i))) {
+			if (decorators.get(i).getDeclaredDelegateFields().contains(predecessorDescriptor.getField())) {
 				if (successorDefinition.getBeanName().equals(decorators.get(i+1).getDecoratorBeanDefinitionHolder().getBeanDefinition())) {
 					// Sequential decorators if predessessor matches decorator i and successor matches decorator i + 1
 					return true;
 				}
-			}
-		}
-		return false;
-	}
-
-	private boolean decoratorMatchesDescriptor(DependencyDescriptor predecessorDescriptor, DecoratorInfo lastDecoratorInfo) {
-		for (DelegateDependencyDescriptor delegateDepDesc : lastDecoratorInfo.getAllDelegateDependencyDescriptors()) {
-			if (delegateDepDesc.equals(predecessorDescriptor)) {
-				return true;
 			}
 		}
 		return false;
@@ -72,9 +61,13 @@ public class QualifiedDecoratorChain {
 		}
 		return false;
 	}
-
-	public DelegateField getArbitraryDelegateField() {
-		return decorators.get(0).getDelegateField(qualifiedDelegateDependencyDescription);
+	
+	public Set<Field> getAllDeclaredDelegateFields() {
+		Set<Field> set = new HashSet<Field>();
+		for (DecoratorInfo deco : decorators) {
+			set.addAll(deco.getDeclaredDelegateFields());
+		}
+		return set;
 	}
 
 	public void addDecoratorInfo(DecoratorInfo decoratorInfo) {
@@ -87,14 +80,6 @@ public class QualifiedDecoratorChain {
 
 	public BeanDefinitionHolder getDelegateBeanDefinitionHolder() {
 		return delegateBeanDefinitionHolder;
-	}
-
-	public QualifiedDependencyDescription getQualifiedDelegateDependencyDescription() {
-		return qualifiedDelegateDependencyDescription;
-	}
-
-	public void setQualifiedDelegateDependencyDescription(QualifiedDependencyDescription qualifiedDelegateDependencyDescription) {
-		this.qualifiedDelegateDependencyDescription = qualifiedDelegateDependencyDescription;
 	}
 
 }

@@ -42,31 +42,6 @@ public class DecoratorInfo {
 		});
 	}
 
-	public List<QualifiedDependencyDescription> getQualifiedDependencyDescriptions() {
-		List<QualifiedDependencyDescription> descs = new ArrayList<QualifiedDependencyDescription>();
-		for (DelegateField field : delegateFields) {
-			descs.add(new QualifiedDependencyDescription(field.getDependencyDescriptor()));
-		}
-		return descs;
-	}
-
-	public boolean isDecoratorFor(QualifiedDependencyDescription qualifiedDescription) {
-		for (QualifiedDependencyDescription description : getQualifiedDependencyDescriptions()) {
-			if (description.equals(qualifiedDescription))
-				return true;
-		}
-		return false;
-	}
-
-	public DelegateField getDelegateField(QualifiedDependencyDescription qualifiedDependencyDescription) {
-		for (DelegateField delegateField : delegateFields) {
-			QualifiedDependencyDescription delegateFieldQualifiedDepDesc = new QualifiedDependencyDescription(delegateField.getDependencyDescriptor());
-			if (delegateFieldQualifiedDepDesc.equals(qualifiedDependencyDescription))
-				return delegateField;
-		}
-		return null;
-	}
-
 	public boolean equals(DecoratorInfo otherDecoratorInfo) {
 		return this.decoratorClass.equals(otherDecoratorInfo.getDecoratorClass());
 	}
@@ -97,6 +72,14 @@ public class DecoratorInfo {
 
 	public List<DelegateField> getDelegateFields() {
 		return delegateFields;
+	}
+	
+	public List<Field> getDeclaredDelegateFields() {
+		List<Field> fields = new ArrayList<Field>();
+		for (DelegateField delegateField : delegateFields) {
+			fields.add(delegateField.getDeclaredField());
+		}
+		return fields;
 	}
 
 	public void setDelegateFields(List<DelegateField> delegateFields) {

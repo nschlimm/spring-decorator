@@ -3,10 +3,8 @@ package com.schlimm.decorator;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.decorator.Decorator;
 
@@ -31,7 +29,6 @@ import com.schlimm.decorator.resolver.DecoratorInfo;
 import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
 import com.schlimm.decorator.resolver.DelegateField;
 import com.schlimm.decorator.resolver.QualifiedDecoratorChain;
-import com.schlimm.decorator.resolver.QualifiedDependencyDescription;
 
 /**
  * This {@link BeanFactoryPostProcessor} sets custom {@link AutowireCandidateResolver} that ignores decorators for autowiring
@@ -55,36 +52,33 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		Map<String, Class> decorators = getRegisteredDecorators(beanFactory);
 		List<DecoratorInfo> decoratorInfos = new ArrayList<DecoratorInfo>();
 		List<QualifiedDecoratorChain> chains = new ArrayList<QualifiedDecoratorChain>();
-		Set<QualifiedDependencyDescription> descs = new HashSet<QualifiedDependencyDescription>();
 		for (String bdName : decorators.keySet()) {
 			DecoratorInfo newDecoratorInfo = new DecoratorInfo(bdName, beanFactory.getBeanDefinition(bdName), decorators.get(bdName));
-			descs.addAll(newDecoratorInfo.getQualifiedDependencyDescriptions());
 			decoratorInfos.add(newDecoratorInfo);
-		}
-		for (QualifiedDependencyDescription qualifiedDependencyDescription : descs) {
-			QualifiedDecoratorChain chain = new QualifiedDecoratorChain(qualifiedDependencyDescription);
-			for (DecoratorInfo decoratorInformation : decoratorInfos) {
-				if (decoratorInformation.isDecoratorFor(qualifiedDependencyDescription)) {
-					chain.addDecoratorInfo(decoratorInformation);
+			String delegate = getRegisteredDelegate(beanFactory, newDecoratorInfo);
+			QualifiedDecoratorChain chain = null;
+			// Gibt es schon eine chain für den delegate?
+			for (QualifiedDecoratorChain qualifiedDecoratorChain : chains) {
+				if (qualifiedDecoratorChain.getDelegateBeanDefinitionHolder().getBeanName().equals(delegate)) {
+					chain = qualifiedDecoratorChain;
 				}
 			}
-			chain.setQualifiedDelegateDependencyDescription(qualifiedDependencyDescription);
-			List<String> delegates = getRegisteredDelegate(beanFactory, chain);
-			chain.setDelegateBeanDefinitionHolder(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegates.get(0)), delegates.get(0)));
+			if (chain == null) chain = new QualifiedDecoratorChain(new BeanDefinitionHolder(beanFactory.getBeanDefinition(delegate), delegate));
+			chain.addDecoratorInfo(newDecoratorInfo);
 			chains.add(chain);
 		}
 		newResolver.setDecoratorChains(chains);
 
 	}
 
-	private List<String> getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, QualifiedDecoratorChain chain) {
-		DelegateField arbitraryDelegateField = chain.getArbitraryDelegateField();
+	private String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
+		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(DependencyDescriptor.class);
 		enhancer.setCallback(NoOp.INSTANCE);
 		enhancer.setInterfaces(new Class[] { DelegateDependencyDescriptorTag.class });
-		DependencyDescriptor desc = (DependencyDescriptor) enhancer.create(new Class[] { Field.class, boolean.class }, new Object[] { arbitraryDelegateField.getDelegateField(), true });
-		String[] bdNames = beanFactory.getBeanNamesForType(arbitraryDelegateField.getDelegateField().getType(), true, false);
+		DependencyDescriptor desc = (DependencyDescriptor) enhancer.create(new Class[] { Field.class, boolean.class }, new Object[] { arbitraryDelegateField.getDeclaredField(), true });
+		String[] bdNames = beanFactory.getBeanNamesForType(arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		List<String> registeredDelegates = new ArrayList<String>();
 		for (String bdName : bdNames) {
 			Class beanClass = null;
@@ -104,7 +98,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 				}
 			}
 		}
-		return registeredDelegates;
+		return registeredDelegates.get(0);
 	}
 
 	@Override

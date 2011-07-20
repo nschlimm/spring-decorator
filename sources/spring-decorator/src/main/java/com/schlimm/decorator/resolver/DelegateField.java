@@ -8,7 +8,7 @@ public class DelegateField {
 	
 	private DelegateDependencyDescriptor dependencyDescriptor;
 
-	public Field getDelegateField() {
+	public Field getDeclaredField() {
 		return delegateField;
 	}
 
