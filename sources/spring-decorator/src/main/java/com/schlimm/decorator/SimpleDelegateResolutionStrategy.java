@@ -3,6 +3,7 @@ package com.schlimm.decorator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -22,10 +23,11 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
 		DependencyDescriptor desc = DescriptorRuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class});
-		String[] bdNames = beanFactory.getBeanNamesForType(arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		List<String> registeredDelegates = new ArrayList<String>();
-		for (String bdName : bdNames) {
-			BeanDefinition bd = beanFactory.getBeanDefinition(bdName);
+		String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+				beanFactory, arbitraryDelegateField.getDeclaredField().getType(), true, false);
+		for (String candidate : candidateNames) {
+			BeanDefinition bd = beanFactory.getBeanDefinition(candidate);
 			// Annotierte Bean aus dem Classpath
 			if (bd instanceof AnnotatedBeanDefinition) {
 				AnnotatedBeanDefinition abd = (AnnotatedBeanDefinition) bd;
@@ -38,12 +40,12 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 						throw new DecoratorAwareBeanFactoryPostProcessorException("Could not find decorator class: " + abd.getBeanClassName(), e);
 					} 
 					// Wenn es ein target object ist, dann die proxy bean definition ziehen, die auch als delegate injected werden soll
-					if (bdName.startsWith("scopedTarget.")) {
-						bdName = bdName.replace("scopedTarget.", "");
+					if (candidate.startsWith("scopedTarget.")) {
+						candidate = candidate.replace("scopedTarget.", "");
 					}
 					// Die aktuelle bean definition muss auf den delegate dependency descriptor passen
-					if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(bdName, desc))) {
-						registeredDelegates.add(bdName);
+					if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(candidate, desc))) {
+						registeredDelegates.add(candidate);
 					}
 				}
 			}
