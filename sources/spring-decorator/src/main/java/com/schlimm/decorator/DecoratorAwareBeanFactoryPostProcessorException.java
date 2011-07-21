@@ -23,4 +23,8 @@ public class DecoratorAwareBeanFactoryPostProcessorException extends NestedRunti
 		super(msg);
 	}
 
+	public DecoratorAwareBeanFactoryPostProcessorException(String msg, ClassNotFoundException e) {
+		super(msg, e);
+	}
+
 }

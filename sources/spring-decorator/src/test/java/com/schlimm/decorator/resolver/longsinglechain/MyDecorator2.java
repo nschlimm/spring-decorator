@@ -3,7 +3,10 @@ package com.schlimm.decorator.resolver.longsinglechain;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
+import org.springframework.context.annotation.Scope;
+
 @Decorator
+@Scope("session")
 public class MyDecorator2 implements MyServiceInterface {
 	
 	@Delegate 

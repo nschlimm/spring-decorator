@@ -1,14 +1,17 @@
 package com.schlimm.decorator.resolver;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -23,6 +26,8 @@ public class DecoratorInfo {
 	private BeanDefinitionHolder decoratorBeanDefinitionHolder;
 
 	private List<DelegateField> delegateFields;
+
+	private static Class<? extends Annotation> decoratorAnnotationType = Decorator.class;
 
 	public static boolean isDecorator(Class candidate) {
 		return AnnotationUtils.findAnnotation(candidate, Decorator.class) != null;
@@ -73,7 +78,7 @@ public class DecoratorInfo {
 	public List<DelegateField> getDelegateFields() {
 		return delegateFields;
 	}
-	
+
 	public List<Field> getDeclaredDelegateFields() {
 		List<Field> fields = new ArrayList<Field>();
 		for (DelegateField delegateField : delegateFields) {
@@ -84,6 +89,17 @@ public class DecoratorInfo {
 
 	public void setDelegateFields(List<DelegateField> delegateFields) {
 		this.delegateFields = delegateFields;
+	}
+
+	public static boolean isDecorator(AnnotatedBeanDefinition bd) {
+		Map<String, Object> attributes = bd.getMetadata().getAnnotationAttributes(decoratorAnnotationType.getName());
+		if (attributes != null)
+			return true;
+		return false;
+	}
+
+	public String toString() {
+		return "Decorator class: " + decoratorClass.getName() + ", " + delegateFields.toString();
 	}
 
 }
