@@ -15,9 +15,11 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
 
+import com.schlimm.decorator.resolver.CDIAutowiringRules;
 import com.schlimm.decorator.resolver.DecoratorInfo;
 import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
 import com.schlimm.decorator.resolver.QualifiedDecoratorChain;
+import com.schlimm.decorator.resolver.SimpleCDIAutowiringRules;
 
 /**
  * This {@link BeanFactoryPostProcessor} sets custom {@link AutowireCandidateResolver} that ignores decorators for autowiring
@@ -33,6 +35,8 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	private DecoratorResolutionStrategy decoratorResolutionStrategy;
 
 	private DelegateResolutionStrategy delegateResolutionStrategy;
+
+	private CDIAutowiringRules cdiAutowiringRules;
 
 	public DecoratorAwareBeanFactoryPostProcessor() {
 		super();
@@ -70,7 +74,10 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			}
 			chain.addDecoratorInfo(newDecoratorInfo);
 		}
-		newResolver.setDecoratorChains(chains);
+		if (cdiAutowiringRules == null) {
+			cdiAutowiringRules = new SimpleCDIAutowiringRules(chains, newResolver, beanFactory);
+		}
+		newResolver.setCdiAutowiringRules(cdiAutowiringRules);
 
 	}
 

@@ -1,22 +1,14 @@
 package com.schlimm.decorator.resolver;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
 
@@ -31,9 +23,7 @@ import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescript
  */
 public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationAutowireCandidateResolver {
 
-	private BeanFactory beanFactory;
-
-	private List<QualifiedDecoratorChain> decoratorChains;
+	private CDIAutowiringRules cdiAutowiringRules;
 
 	public DelegateAwareAutowireCandidateResolver() {
 		super();
@@ -52,100 +42,18 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
 		if (rawResult==false) return rawResult;
 		boolean isDelegateDescriptor = false;
-		if (CollectionUtils.select(Arrays.asList(descriptor.getAnnotations()), new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				if (object instanceof Delegate) return true;
-				return false;
-			};
-		}).size()>0) isDelegateDescriptor = true;
+		if (descriptor.getField().getAnnotation(Delegate.class)!=null) isDelegateDescriptor = true;
 		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
 			return rawResult;
-		boolean decoratorRulesResult = applyDecoratorAutowiringRules(bdHolder, descriptor);
+		boolean decoratorRulesResult = cdiAutowiringRules.applyDecoratorAutowiringRules(bdHolder, descriptor);
 		return rawResult && decoratorRulesResult;
 	}
 
-	private boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		boolean match = false;
-		if (isDecoratedInjectionPoint(descriptor)) {
-			// Descriptor refers to a decorated target bean => bdHolder bean name must match last decorator bean name of the
-			// decorator chain
-			QualifiedDecoratorChain chain = getDecoratorChainForDecoratedInjectionPoint(descriptor);
-			DecoratorInfo firstDecoratorInfo = chain.getDecorators().get(0);
-			if (firstDecoratorInfo.getDecoratorBeanDefinitionHolder().getBeanName().equals(bdHolder.getBeanName())) {
-				return true;
-			}
-		} else if (isDecorator(descriptor)) {
-			QualifiedDecoratorChain chain = getDecoratorChainForDecoratorDescriptor(descriptor);
-			// descriptor must be predecessor decorator for bdHolder
-			if (chain.areSequential(bdHolder, descriptor))
-				return true;
-		}
-		return match;
+	public CDIAutowiringRules getCdiAutowiringRules() {
+		return cdiAutowiringRules;
 	}
 
-	public boolean isAutowireCandidate2(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		return super.isAutowireCandidate(bdHolder, descriptor);
-	}
-
-	public boolean isDecoratedInjectionPoint(DependencyDescriptor descriptor) {
-		// Field is not in a decorator, but descriptor matches a target bean definition
-		if (AnnotationUtils.findAnnotation(descriptor.getField().getDeclaringClass(), Decorator.class) == null) {
-			// Now that we know, that we're aoutside a @Decorator:
-			// is there a chain that contains a target delegate bean definition that matches the descriptor?
-			for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
-				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
-				// Check qualifiers and type of the chain's delegate and the descriptor
-				if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), descriptor)&&beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	public QualifiedDecoratorChain getDecoratorChainForDecoratedInjectionPoint(DependencyDescriptor decoratedInjectionPoint) {
-		// Match: a chain contains a target bean definition that matches the target descriptor
-		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
-			String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
-			// Check qualifiers and type of the chain's delegate and the descriptor
-			if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), decoratedInjectionPoint)&&beanFactory.isTypeMatch(delegateName, decoratedInjectionPoint.getDependencyType())) {
-				return decoratorChain;
-			}
-		}
-		return null;
-	}
-
-	public boolean isDecorator(DependencyDescriptor dependencyDescriptor) {
-		if (AnnotationUtils.findAnnotation(dependencyDescriptor.getField().getDeclaringClass(), Decorator.class) != null) {
-			return true;
-		}
-		return false;
-	}
-
-	public QualifiedDecoratorChain getDecoratorChainForDecoratorDescriptor(DependencyDescriptor decoratorDescriptor) {
-		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
-			Set<Field> fields = decoratorChain.getAllDeclaredDelegateFields();
-			if (fields.contains(decoratorDescriptor.getField())) {
-				return decoratorChain;
-			}
-		}
-		return null;
-	}
-
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	public void setBeanFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
-
-	public List<QualifiedDecoratorChain> getDecoratorChains() {
-		return decoratorChains;
-	}
-
-	public void setDecoratorChains(List<QualifiedDecoratorChain> decoratorChains) {
-		this.decoratorChains = decoratorChains;
+	public void setCdiAutowiringRules(CDIAutowiringRules cdiAutowiringRules) {
+		this.cdiAutowiringRules = cdiAutowiringRules;
 	}
 }

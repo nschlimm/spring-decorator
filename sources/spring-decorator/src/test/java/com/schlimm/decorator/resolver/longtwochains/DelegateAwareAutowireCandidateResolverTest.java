@@ -22,6 +22,7 @@ import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
 import com.schlimm.decorator.SimpleDelegateResolutionStrategy;
 import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
 import com.schlimm.decorator.resolver.QualifiedDecoratorChain;
+import com.schlimm.decorator.resolver.SimpleCDIAutowiringRules;
 
 @ContextConfiguration("/test-context-decorator-resolver-long-two-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,7 +50,7 @@ public class DelegateAwareAutowireCandidateResolverTest {
 		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy());
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
 		resolver = (DelegateAwareAutowireCandidateResolver) ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
-		List<QualifiedDecoratorChain> chains = resolver.getDecoratorChains();
+		List<QualifiedDecoratorChain> chains = ((SimpleCDIAutowiringRules)resolver.getCdiAutowiringRules()).getDecoratorChains();
 		// QualifiedDecoratorChain chainMy= chains.get(0).getDelegateBeanDefinitionHolder().getBeanName().equals("myDelegate") ?
 		// chains.get(0) : chains.get(1);
 		try {
