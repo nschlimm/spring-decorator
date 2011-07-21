@@ -35,7 +35,7 @@ public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStr
 							bd = beanFactory.getBeanDefinition(bdName.replace("scopedTarget.", ""));
 						}
 						if (bd.isAutowireCandidate()) {
-							definitions.put(bdName, decoratorClass);
+							definitions.put(bdName.replace("scopedTarget.", ""), decoratorClass);
 						} 
 					}
 				}

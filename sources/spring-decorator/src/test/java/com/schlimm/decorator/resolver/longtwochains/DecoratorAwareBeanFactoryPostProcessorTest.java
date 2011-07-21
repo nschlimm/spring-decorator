@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor;
+import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
+import com.schlimm.decorator.SimpleDelegateResolutionStrategy;
 import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
 
 
@@ -26,7 +28,7 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	
 	@Before
 	public void setUp() {
-		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor();
+		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy());
 	}
 	
 	@Test
