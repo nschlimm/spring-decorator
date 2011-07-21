@@ -3,14 +3,17 @@ package com.schlimm.decorator.resolver.longtwochains;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
+import org.springframework.context.annotation.Scope;
+
 @Decorator
-public class MyDecorator2 implements MyServiceInterface {
+@Scope("session")
+public class AnotherDecorator2 implements AnotherServiceInterface {
 	
 	@Delegate 
-	private MyServiceInterface delegateInterface;
+	private AnotherServiceInterface delegateInterface;
 
 	@Override
-	public MyServiceInterface getDelegateObject() {
+	public AnotherServiceInterface getDelegateObject() {
 		return delegateInterface;
 	}
 

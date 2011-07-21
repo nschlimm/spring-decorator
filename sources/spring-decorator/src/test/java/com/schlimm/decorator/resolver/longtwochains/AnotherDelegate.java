@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("session")
-public class MyDelegate implements MyServiceInterface {
+public class AnotherDelegate implements AnotherServiceInterface {
 
 	@Override
-	public MyServiceInterface getDelegateObject() {
+	public AnotherServiceInterface getDelegateObject() {
 		return null;
 	}
 

@@ -18,7 +18,7 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.schlimm.decorator.DelegateDependencyDescriptorTag;
+import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
 
 /**
  * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring.
@@ -48,6 +48,7 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 	}
 
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
+		// First check qualifiers
 		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
 		if (rawResult==false) return rawResult;
 		boolean isDelegateDescriptor = false;
@@ -93,7 +94,9 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 			// Now that we know, that we're aoutside a @Decorator:
 			// is there a chain that contains a target delegate bean definition that matches the descriptor?
 			for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
-				if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), descriptor)) {
+				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
+				// Check qualifiers and type of the chain's delegate and the descriptor
+				if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), descriptor)&&beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {
 					return true;
 				}
 			}
@@ -104,7 +107,9 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 	public QualifiedDecoratorChain getDecoratorChainForDecoratedInjectionPoint(DependencyDescriptor decoratedInjectionPoint) {
 		// Match: a chain contains a target bean definition that matches the target descriptor
 		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
-			if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), decoratedInjectionPoint)) {
+			String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
+			// Check qualifiers and type of the chain's delegate and the descriptor
+			if (super.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(), decoratedInjectionPoint)&&beanFactory.isTypeMatch(delegateName, decoratedInjectionPoint.getDependencyType())) {
 				return decoratorChain;
 			}
 		}

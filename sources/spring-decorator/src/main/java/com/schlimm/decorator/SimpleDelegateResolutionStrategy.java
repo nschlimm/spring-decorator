@@ -1,11 +1,7 @@
 package com.schlimm.decorator;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.NoOp;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,6 +12,8 @@ import org.springframework.util.ClassUtils;
 
 import com.schlimm.decorator.resolver.DecoratorInfo;
 import com.schlimm.decorator.resolver.DelegateField;
+import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
+import com.schlimm.decorator.resolver.descriptorrules.DescriptorRuleUtils;
 
 public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrategy {
 
@@ -23,11 +21,7 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 	@Override
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
-		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(DependencyDescriptor.class);
-		enhancer.setCallback(NoOp.INSTANCE);
-		enhancer.setInterfaces(new Class[] { DelegateDependencyDescriptorTag.class });
-		DependencyDescriptor desc = (DependencyDescriptor) enhancer.create(new Class[] { Field.class, boolean.class }, new Object[] { arbitraryDelegateField.getDeclaredField(), true });
+		DependencyDescriptor desc = DescriptorRuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class});
 		String[] bdNames = beanFactory.getBeanNamesForType(arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		List<String> registeredDelegates = new ArrayList<String>();
 		for (String bdName : bdNames) {
@@ -59,5 +53,6 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 		}
 		return registeredDelegates.get(0);
 	}
+
 
 }

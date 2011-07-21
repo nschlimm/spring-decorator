@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver.longsinglechain;
+package com.schlimm.decorator.resolver.longtwochains;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import com.schlimm.decorator.DecoratorResolutionStrategy;
 import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
 
 
-@ContextConfiguration("/test-context-decorator-resolver-long-single-chain.xml")
+@ContextConfiguration("/test-context-decorator-resolver-long-two-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SimpleDecoratorResolutionStrategyTest {
 
@@ -28,8 +28,8 @@ public class SimpleDecoratorResolutionStrategyTest {
 	}
 	
 	@Test
-	public void testChaining_MustBeThreeDecorators() {
-		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).size()==3);
+	public void testChaining_MustBeSixDecorators() {
+		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).size()==6);
 	}
 
 	@Test
@@ -45,6 +45,21 @@ public class SimpleDecoratorResolutionStrategyTest {
 	@Test
 	public void testChaining_ContainsMyDecorator3() {
 		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).containsKey("myDecorator3"));
+	}
+	
+	@Test
+	public void testChaining_ContainsAnotherDecorator() {
+		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).containsKey("anotherDecorator"));
+	}
+	
+	@Test
+	public void testChaining_ContainsAnotherDecorator2() {
+		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).containsKey("anotherDecorator2"));
+	}
+	
+	@Test
+	public void testChaining_ContainsAnotherDecorator3() {
+		Assert.isTrue(decoratorResolutionStrategy.getRegisteredDecorators(beanFactory).containsKey("anotherDecorator3"));
 	}
 	
 }

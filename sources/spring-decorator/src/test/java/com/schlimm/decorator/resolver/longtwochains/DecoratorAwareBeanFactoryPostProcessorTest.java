@@ -17,7 +17,7 @@ import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
 
 
 
-@ContextConfiguration("/test-context-decorator-resolver-long-two-chain.xml")
+@ContextConfiguration("/test-context-decorator-resolver-long-two-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DecoratorAwareBeanFactoryPostProcessorTest {
 
@@ -32,10 +32,10 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	}
 	
 	@Test
-	public void testChaining_MustBeOneChain() {
+	public void testChaining_MustBeTwoChains() {
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
 		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
-		Assert.isTrue(resolver.getDecoratorChains().size()==1);
+		Assert.isTrue(resolver.getDecoratorChains().size()==2);
 	}
 
 	@Test
@@ -46,10 +46,18 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	}
 	
 	@Test
-	public void testChaining_MustBeThreeDecorators() {
+	public void testChaining_AnotherDelegateMustBeDelegate() {
+		beanPostProcessor.postProcessBeanFactory(beanFactory);
+		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
+		Assert.isTrue(resolver.getDecoratorChains().get(1).getDelegateBeanDefinitionHolder().getBeanName().equals("anotherDelegate"));
+	}
+	
+	@Test
+	public void testChaining_MustBeThreeDecoratorsInBothChains() {
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
 		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
 		Assert.isTrue(resolver.getDecoratorChains().get(0).getDecorators().size()==3);
+		Assert.isTrue(resolver.getDecoratorChains().get(1).getDecorators().size()==3);
 	}
 	
 }

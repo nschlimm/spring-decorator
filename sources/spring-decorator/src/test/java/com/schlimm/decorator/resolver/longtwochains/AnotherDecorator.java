@@ -4,13 +4,13 @@ import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
 @Decorator
-public class MyDecorator3 implements MyServiceInterface {
+public class AnotherDecorator implements AnotherServiceInterface {
 	
 	@Delegate 
-	private MyServiceInterface delegateInterface;
+	private AnotherServiceInterface delegateInterface;
 
 	@Override
-	public MyServiceInterface getDelegateObject() {
+	public AnotherServiceInterface getDelegateObject() {
 		return delegateInterface;
 	}
 
@@ -18,7 +18,5 @@ public class MyDecorator3 implements MyServiceInterface {
 	public String sayHello() {
 		return delegateInterface.sayHello();
 	}
-
-
 
 }
