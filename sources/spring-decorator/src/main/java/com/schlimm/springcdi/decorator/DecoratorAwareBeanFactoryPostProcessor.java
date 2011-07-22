@@ -1,4 +1,4 @@
-package com.schlimm.decorator;
+package com.schlimm.springcdi.decorator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,16 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
 
-import com.schlimm.decorator.resolver.CDIAutowiringRules;
-import com.schlimm.decorator.resolver.DecoratorInfo;
-import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
-import com.schlimm.decorator.resolver.QualifiedDecoratorChain;
-import com.schlimm.decorator.resolver.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.SpringCDIInfrastructure;
+import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
+import com.schlimm.springcdi.model.DecoratorInfo;
+import com.schlimm.springcdi.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.resolver.rules.DecoratorAutowiringRules;
+import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 /**
  * This {@link BeanFactoryPostProcessor} sets custom {@link AutowireCandidateResolver} that ignores decorators for autowiring
@@ -36,7 +41,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 
 	private DelegateResolutionStrategy delegateResolutionStrategy;
 
-	private CDIAutowiringRules cdiAutowiringRules;
+	private DecoratorAutowiringRules decoratorAutowiringRules;
 
 	public DecoratorAwareBeanFactoryPostProcessor() {
 		super();
@@ -49,10 +54,6 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	}
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
-		DelegateAwareAutowireCandidateResolver newResolver = new DelegateAwareAutowireCandidateResolver();
-		newResolver.setBeanFactory(beanFactory);
-		((DefaultListableBeanFactory) beanFactory).setAutowireCandidateResolver(newResolver);
 
 		Map<String, Class> decorators = decoratorResolutionStrategy.getRegisteredDecorators(beanFactory);
 		List<DecoratorInfo> decoratorInfos = new ArrayList<DecoratorInfo>();
@@ -74,10 +75,20 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			}
 			chain.addDecoratorInfo(newDecoratorInfo);
 		}
-		if (cdiAutowiringRules == null) {
-			cdiAutowiringRules = new SimpleCDIAutowiringRules(chains, newResolver, beanFactory);
+		
+		AutowireCandidateResolver resolver = ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
+		if (resolver instanceof SpringCDIInfrastructure) {
+			((SpringCDIInfrastructure)resolver).addPlugin(decoratorAutowiringRules == null ? new SimpleCDIAutowiringRules() : decoratorAutowiringRules);
+		} else {
+			DecoratorAwareAutowireCandidateResolver newResolver = new DecoratorAwareAutowireCandidateResolver();
+			newResolver.setBeanFactory(beanFactory);
+			((DefaultListableBeanFactory) beanFactory).setAutowireCandidateResolver(newResolver);
+			
+			if (decoratorAutowiringRules == null) {
+				decoratorAutowiringRules = new SimpleCDIAutowiringRules(chains, newResolver, beanFactory);
+			}
+			newResolver.addPlugin(decoratorAutowiringRules);
 		}
-		newResolver.setCdiAutowiringRules(cdiAutowiringRules);
 
 	}
 

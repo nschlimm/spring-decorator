@@ -9,8 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-import com.schlimm.decorator.DecoratorResolutionStrategy;
-import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 
 
 @ContextConfiguration("/test-context-decorator-resolver-long-single-chain.xml")

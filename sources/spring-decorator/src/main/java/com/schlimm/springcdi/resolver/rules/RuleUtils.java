@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver.descriptorrules;
+package com.schlimm.springcdi.resolver.rules;
 
 import java.lang.reflect.Field;
 
@@ -7,7 +7,7 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
-public class DescriptorRuleUtils {
+public class RuleUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static DependencyDescriptor createRuleBasedDescriptor(Field field, Class[] ruleTags) {

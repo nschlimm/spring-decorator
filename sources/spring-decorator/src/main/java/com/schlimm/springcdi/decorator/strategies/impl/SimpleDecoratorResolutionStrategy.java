@@ -1,4 +1,4 @@
-package com.schlimm.decorator;
+package com.schlimm.springcdi.decorator.strategies.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
-import com.schlimm.decorator.resolver.DecoratorInfo;
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
+import com.schlimm.springcdi.model.DecoratorInfo;
 
 @SuppressWarnings("rawtypes")
 public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStrategy {

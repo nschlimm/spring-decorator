@@ -1,8 +1,8 @@
-package com.schlimm.decorator;
+package com.schlimm.springcdi.decorator.strategies;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import com.schlimm.decorator.resolver.DecoratorInfo;
+import com.schlimm.springcdi.model.DecoratorInfo;
 
 public interface DelegateResolutionStrategy {
 	

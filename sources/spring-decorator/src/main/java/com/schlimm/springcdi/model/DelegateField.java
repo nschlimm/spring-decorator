@@ -1,18 +1,20 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.model;
 
 import java.lang.reflect.Field;
+
+import org.springframework.beans.factory.config.DependencyDescriptor;
 
 public class DelegateField {
 
 	private Field delegateField;
 
-	private DelegateDependencyDescriptor dependencyDescriptor;
+	private DependencyDescriptor dependencyDescriptor;
 
 	public Field getDeclaredField() {
 		return delegateField;
 	}
 
-	public DelegateField(Field delegateField, DelegateDependencyDescriptor dependencyDescriptor) {
+	public DelegateField(Field delegateField, DependencyDescriptor dependencyDescriptor) {
 		super();
 		this.delegateField = delegateField;
 		this.dependencyDescriptor = dependencyDescriptor;
@@ -22,11 +24,11 @@ public class DelegateField {
 		this.delegateField = delegateField;
 	}
 
-	public DelegateDependencyDescriptor getDependencyDescriptor() {
+	public DependencyDescriptor getDependencyDescriptor() {
 		return dependencyDescriptor;
 	}
 
-	public void setDependencyDescriptor(DelegateDependencyDescriptor dependencyDescriptor) {
+	public void setDependencyDescriptor(DependencyDescriptor dependencyDescriptor) {
 		this.dependencyDescriptor = dependencyDescriptor;
 	}
 

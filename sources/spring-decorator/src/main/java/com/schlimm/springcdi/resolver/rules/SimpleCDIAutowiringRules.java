@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.resolver.rules;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -11,11 +11,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 
-import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
-import com.schlimm.decorator.resolver.descriptorrules.DescriptorRuleUtils;
+import com.schlimm.springcdi.model.DecoratorInfo;
+import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 
-public class SimpleCDIAutowiringRules implements CDIAutowiringRules {
+public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	private List<QualifiedDecoratorChain> decoratorChains;
 
@@ -62,7 +63,7 @@ public class SimpleCDIAutowiringRules implements CDIAutowiringRules {
 				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 				// Check qualifiers and type of the chain's delegate and the descriptor
 				if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-						DescriptorRuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
+						RuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
 						&& beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {
 					return true;
 				}
@@ -77,7 +78,7 @@ public class SimpleCDIAutowiringRules implements CDIAutowiringRules {
 			String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 			// Check qualifiers and type of the chain's delegate and the descriptor
 			if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-					DescriptorRuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
+					RuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
 					&& beanFactory.isTypeMatch(delegateName, decoratedInjectionPoint.getDependencyType())) {
 				return decoratorChain;
 			}
@@ -104,6 +105,14 @@ public class SimpleCDIAutowiringRules implements CDIAutowiringRules {
 
 	public List<QualifiedDecoratorChain> getDecoratorChains() {
 		return decoratorChains;
+	}
+
+	@Override
+	public boolean executeLogic(Object... arguments) {
+		Assert.isTrue(arguments.length==2, "Expect two arguments!");
+		Assert.isTrue(arguments[0] instanceof BeanDefinitionHolder);
+		Assert.isTrue(arguments[1] instanceof DependencyDescriptor);
+		return applyDecoratorAutowiringRules((BeanDefinitionHolder)arguments[0], (DependencyDescriptor)arguments[1]);
 	}
 
 }

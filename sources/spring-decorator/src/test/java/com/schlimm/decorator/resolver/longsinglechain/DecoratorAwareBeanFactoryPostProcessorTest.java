@@ -10,11 +10,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-import com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor;
-import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
-import com.schlimm.decorator.SimpleDelegateResolutionStrategy;
-import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
-import com.schlimm.decorator.resolver.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
+import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 
 
@@ -35,22 +35,22 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	@Test
 	public void testChaining_MustBeOneChain() {
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
-		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
-		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getCdiAutowiringRules()).getDecoratorChains().size()==1);
+		DecoratorAwareAutowireCandidateResolver resolver = (DecoratorAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
+		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getDecoratorAutowiringRules()).getDecoratorChains().size()==1);
 	}
 
 	@Test
 	public void testChaining_MyDelegateMustBeDelegate() {
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
-		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
-		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getCdiAutowiringRules()).getDecoratorChains().get(0).getDelegateBeanDefinitionHolder().getBeanName().equals("myDelegate"));
+		DecoratorAwareAutowireCandidateResolver resolver = (DecoratorAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
+		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getDecoratorAutowiringRules()).getDecoratorChains().get(0).getDelegateBeanDefinitionHolder().getBeanName().equals("myDelegate"));
 	}
 	
 	@Test
 	public void testChaining_MustBeThreeDecorators() {
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
-		DelegateAwareAutowireCandidateResolver resolver = (DelegateAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
-		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getCdiAutowiringRules()).getDecoratorChains().get(0).getDecorators().size()==3);
+		DecoratorAwareAutowireCandidateResolver resolver = (DecoratorAwareAutowireCandidateResolver)((DefaultListableBeanFactory)beanFactory).getAutowireCandidateResolver();
+		Assert.isTrue(((SimpleCDIAutowiringRules)resolver.getDecoratorAutowiringRules()).getDecoratorChains().get(0).getDecorators().size()==3);
 	}
 	
 }

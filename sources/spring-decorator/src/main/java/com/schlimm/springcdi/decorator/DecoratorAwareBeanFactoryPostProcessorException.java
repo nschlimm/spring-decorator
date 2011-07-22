@@ -1,4 +1,4 @@
-package com.schlimm.decorator;
+package com.schlimm.springcdi.decorator;
 
 import org.springframework.core.NestedRuntimeException;
 

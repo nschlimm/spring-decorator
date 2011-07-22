@@ -1,4 +1,4 @@
-package com.schlimm.decorator;
+package com.schlimm.springcdi.decorator.strategies.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,12 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
-import com.schlimm.decorator.resolver.DecoratorInfo;
-import com.schlimm.decorator.resolver.DelegateField;
-import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
-import com.schlimm.decorator.resolver.descriptorrules.DescriptorRuleUtils;
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
+import com.schlimm.springcdi.model.DecoratorInfo;
+import com.schlimm.springcdi.model.DelegateField;
+import com.schlimm.springcdi.resolver.rules.DelegateDependencyDescriptorTag;
+import com.schlimm.springcdi.resolver.rules.RuleUtils;
 
 public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrategy {
 
@@ -22,7 +24,7 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 	@Override
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
-		DependencyDescriptor desc = DescriptorRuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class });
+		DependencyDescriptor desc = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class });
 		List<String> registeredDelegates = new ArrayList<String>();
 		String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		for (String candidate : candidateNames) {

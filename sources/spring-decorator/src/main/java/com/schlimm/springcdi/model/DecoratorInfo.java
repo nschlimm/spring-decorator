@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -14,6 +14,7 @@ import javax.decorator.Delegate;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
@@ -41,7 +42,7 @@ public class DecoratorInfo {
 			@Override
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				if (field.isAnnotationPresent(Delegate.class)) {
-					delegateFields.add(new DelegateField(field, new DelegateDependencyDescriptor(field, false)));
+					delegateFields.add(new DelegateField(field, new DependencyDescriptor(field, false)));
 				}
 			}
 		});
@@ -67,8 +68,8 @@ public class DecoratorInfo {
 		return decoratorBeanDefinitionHolder;
 	}
 
-	public Set<DelegateDependencyDescriptor> getAllDelegateDependencyDescriptors() {
-		Set<DelegateDependencyDescriptor> descs = new HashSet<DelegateDependencyDescriptor>();
+	public Set<DependencyDescriptor> getAllDelegateDependencyDescriptors() {
+		Set<DependencyDescriptor> descs = new HashSet<DependencyDescriptor>();
 		for (DelegateField delegateField : delegateFields) {
 			descs.add(delegateField.getDependencyDescriptor());
 		}

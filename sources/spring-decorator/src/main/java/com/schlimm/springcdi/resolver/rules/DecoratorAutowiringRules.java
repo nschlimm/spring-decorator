@@ -1,9 +1,11 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.resolver.rules;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
-public interface CDIAutowiringRules {
+import com.schlimm.springcdi.SpringCDIPlugin;
+
+public interface DecoratorAutowiringRules extends SpringCDIPlugin {
 
 	boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor);
 

@@ -1,6 +1,7 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.resolver;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.decorator.Delegate;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
 
-import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescriptorTag;
+import com.schlimm.springcdi.SpringCDIInfrastructure;
+import com.schlimm.springcdi.SpringCDIPlugin;
+import com.schlimm.springcdi.resolver.rules.DelegateDependencyDescriptorTag;
 
 /**
  * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring.
@@ -21,19 +24,19 @@ import com.schlimm.decorator.resolver.descriptorrules.DelegateDependencyDescript
  * @author Niklas Schlimm
  * 
  */
-public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationAutowireCandidateResolver {
+public class DecoratorAwareAutowireCandidateResolver extends QualifierAnnotationAutowireCandidateResolver implements SpringCDIInfrastructure {
 
-	private CDIAutowiringRules cdiAutowiringRules;
+	private Set<SpringCDIPlugin> rulePlugins = new HashSet<SpringCDIPlugin>();
 
-	public DelegateAwareAutowireCandidateResolver() {
+	public DecoratorAwareAutowireCandidateResolver() {
 		super();
 	}
 
-	public DelegateAwareAutowireCandidateResolver(Class<? extends Annotation> qualifierType) {
+	public DecoratorAwareAutowireCandidateResolver(Class<? extends Annotation> qualifierType) {
 		super(qualifierType);
 	}
 
-	public DelegateAwareAutowireCandidateResolver(Set<Class<? extends Annotation>> qualifierTypes) {
+	public DecoratorAwareAutowireCandidateResolver(Set<Class<? extends Annotation>> qualifierTypes) {
 		super(qualifierTypes);
 	}
 
@@ -45,15 +48,18 @@ public class DelegateAwareAutowireCandidateResolver extends QualifierAnnotationA
 		if (descriptor.getField().getAnnotation(Delegate.class)!=null) isDelegateDescriptor = true;
 		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
 			return rawResult;
-		boolean decoratorRulesResult = cdiAutowiringRules.applyDecoratorAutowiringRules(bdHolder, descriptor);
-		return rawResult && decoratorRulesResult;
+		boolean ruleSetResultOK = false;
+		for (SpringCDIPlugin rulePlugin : rulePlugins) {
+			boolean rulesResultOK = rulePlugin.executeLogic(bdHolder, descriptor);
+			if (!rulesResultOK) {
+				ruleSetResultOK = false;
+			}
+		}
+		return rawResult && ruleSetResultOK;
 	}
 
-	public CDIAutowiringRules getCdiAutowiringRules() {
-		return cdiAutowiringRules;
-	}
-
-	public void setCdiAutowiringRules(CDIAutowiringRules cdiAutowiringRules) {
-		this.cdiAutowiringRules = cdiAutowiringRules;
+	@Override
+	public void addPlugin(SpringCDIPlugin plugin) {
+		rulePlugins.add(plugin);
 	}
 }

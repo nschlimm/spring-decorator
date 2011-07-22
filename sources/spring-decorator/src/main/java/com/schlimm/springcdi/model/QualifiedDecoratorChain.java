@@ -1,4 +1,4 @@
-package com.schlimm.decorator.resolver;
+package com.schlimm.springcdi.model;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

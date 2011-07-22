@@ -17,12 +17,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-import com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor;
-import com.schlimm.decorator.SimpleDecoratorResolutionStrategy;
-import com.schlimm.decorator.SimpleDelegateResolutionStrategy;
-import com.schlimm.decorator.resolver.DelegateAwareAutowireCandidateResolver;
-import com.schlimm.decorator.resolver.QualifiedDecoratorChain;
-import com.schlimm.decorator.resolver.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
+import com.schlimm.springcdi.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 @ContextConfiguration("/test-context-decorator-resolver-long-two-qualified-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,7 +33,7 @@ public class DelegateAwareAutowireCandidateResolverTest {
 
 	private DecoratorAwareBeanFactoryPostProcessor beanPostProcessor;
 	
-	private DelegateAwareAutowireCandidateResolver resolver;
+	private DecoratorAwareAutowireCandidateResolver resolver;
 
 	private SomeTestBean someTestBean = new SomeTestBean();
 
@@ -49,8 +49,8 @@ public class DelegateAwareAutowireCandidateResolverTest {
 	public void setUp() {
 		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy());
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
-		resolver = (DelegateAwareAutowireCandidateResolver) ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
-		List<QualifiedDecoratorChain> chains = ((SimpleCDIAutowiringRules)resolver.getCdiAutowiringRules()).getDecoratorChains();
+		resolver = (DecoratorAwareAutowireCandidateResolver) ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
+		List<QualifiedDecoratorChain> chains = ((SimpleCDIAutowiringRules)resolver.getDecoratorAutowiringRules()).getDecoratorChains();
 		// QualifiedDecoratorChain chainMy= chains.get(0).getDelegateBeanDefinitionHolder().getBeanName().equals("myDelegate") ?
 		// chains.get(0) : chains.get(1);
 		try {
