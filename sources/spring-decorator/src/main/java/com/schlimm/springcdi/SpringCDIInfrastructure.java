@@ -1,5 +1,7 @@
 package com.schlimm.springcdi;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
 
 /**
@@ -12,5 +14,6 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 public interface SpringCDIInfrastructure {
 	
 	void addPlugin(SpringCDIPlugin plugin);
+	Set<SpringCDIPlugin> getPlugins();
 	
 }

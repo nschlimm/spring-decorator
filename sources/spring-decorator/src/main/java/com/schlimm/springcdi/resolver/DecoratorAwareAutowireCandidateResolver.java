@@ -48,7 +48,7 @@ public class DecoratorAwareAutowireCandidateResolver extends QualifierAnnotation
 		if (descriptor.getField().getAnnotation(Delegate.class)!=null) isDelegateDescriptor = true;
 		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
 			return rawResult;
-		boolean ruleSetResultOK = false;
+		boolean ruleSetResultOK = true;
 		for (SpringCDIPlugin rulePlugin : rulePlugins) {
 			boolean rulesResultOK = rulePlugin.executeLogic(bdHolder, descriptor);
 			if (!rulesResultOK) {
@@ -61,5 +61,10 @@ public class DecoratorAwareAutowireCandidateResolver extends QualifierAnnotation
 	@Override
 	public void addPlugin(SpringCDIPlugin plugin) {
 		rulePlugins.add(plugin);
+	}
+
+	@Override
+	public Set<SpringCDIPlugin> getPlugins() {
+		return rulePlugins;
 	}
 }

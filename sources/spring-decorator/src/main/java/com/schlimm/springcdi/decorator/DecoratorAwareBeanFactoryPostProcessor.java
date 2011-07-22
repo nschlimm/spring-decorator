@@ -78,7 +78,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		
 		AutowireCandidateResolver resolver = ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
 		if (resolver instanceof SpringCDIInfrastructure) {
-			((SpringCDIInfrastructure)resolver).addPlugin(decoratorAutowiringRules == null ? new SimpleCDIAutowiringRules() : decoratorAutowiringRules);
+			((SpringCDIInfrastructure)resolver).addPlugin(decoratorAutowiringRules == null ? new SimpleCDIAutowiringRules(chains, resolver, beanFactory) : decoratorAutowiringRules);
 		} else {
 			DecoratorAwareAutowireCandidateResolver newResolver = new DecoratorAwareAutowireCandidateResolver();
 			newResolver.setBeanFactory(beanFactory);
