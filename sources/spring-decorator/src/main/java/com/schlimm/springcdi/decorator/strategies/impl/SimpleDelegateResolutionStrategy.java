@@ -15,7 +15,7 @@ import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorExc
 import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
 import com.schlimm.springcdi.model.DecoratorInfo;
 import com.schlimm.springcdi.model.DelegateField;
-import com.schlimm.springcdi.resolver.rules.DelegateDependencyDescriptorTag;
+import com.schlimm.springcdi.resolver.rules.IgnoreDecoratorAutowiringLogic;
 import com.schlimm.springcdi.resolver.rules.RuleUtils;
 
 public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrategy {
@@ -24,7 +24,7 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 	@Override
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
-		DependencyDescriptor delegateDependencyDescriptor = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class });
+		DependencyDescriptor delegateDependencyDescriptor = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { IgnoreDecoratorAutowiringLogic.class });
 		List<String> registeredDelegates = new ArrayList<String>();
 		String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		for (String candidate : candidateNames) {

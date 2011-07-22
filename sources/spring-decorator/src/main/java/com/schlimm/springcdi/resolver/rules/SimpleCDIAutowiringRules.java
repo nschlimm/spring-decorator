@@ -57,7 +57,7 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 		boolean isDelegateDescriptor = false;
 		if (descriptor.getField().getAnnotation(Delegate.class) != null)
 			isDelegateDescriptor = true;
-		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
+		if (descriptor instanceof IgnoreDecoratorAutowiringLogic || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
 			return true;
 		boolean match = false;
 		if (isDecoratedInjectionPoint(descriptor)) {
@@ -93,7 +93,7 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 				// Check qualifiers and type of the chain's delegate and the descriptor
 				if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-						RuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
+						RuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
 						&& beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {
 					return true;
 				}
@@ -114,7 +114,7 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 			String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 			// Check qualifiers and type of the chain's delegate and the descriptor
 			if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-					RuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { DelegateDependencyDescriptorTag.class }))
+					RuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
 					&& beanFactory.isTypeMatch(delegateName, decoratedInjectionPoint.getDependencyType())) {
 				return decoratorChain;
 			}

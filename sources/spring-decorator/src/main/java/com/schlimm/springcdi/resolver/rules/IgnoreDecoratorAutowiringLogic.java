@@ -13,5 +13,4 @@ import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
  * @see DecoratorAwareAutowireCandidateResolver, SimpleDelegateResolutionStrategy
  * 
  */
-public interface DelegateDependencyDescriptorTag {
-}
+public interface IgnoreDecoratorAutowiringLogic {}
