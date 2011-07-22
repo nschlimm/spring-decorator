@@ -8,11 +8,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="com.schlimm.decorator.resolver.longsinglechain" scoped-proxy="targetClass">
-		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
-	</context:component-scan>
-
-	<context:component-scan base-package="com.schlimm.decorator.resolver.longtwochains" scoped-proxy="targetClass">
+	<context:component-scan base-package="com.schlimm.decorator.resolver.longtwoqualified" scoped-proxy="targetClass">
 		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
@@ -23,12 +19,9 @@
 				<value>org.springframework.beans.factory.annotation.Autowired</value>
 				<value>org.springframework.beans.factory.annotation.Value</value>
 				<value>javax.inject.Inject</value>
-				<value>javax.decorator.Delegate</value>
 			</set>
 		</property>
 	</bean>
-
-	<bean class="com.schlimm.decorator.DecoratorAwareBeanFactoryPostProcessor"/>
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">
