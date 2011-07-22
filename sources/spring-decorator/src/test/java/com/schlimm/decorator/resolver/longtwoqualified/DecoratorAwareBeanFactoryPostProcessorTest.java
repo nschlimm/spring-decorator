@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
+import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
 import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
@@ -29,7 +30,7 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	
 	@Before
 	public void setUp() {
-		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy());
+		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy(), null, new SimpleDecoratorOrderingStrategy());
 	}
 	
 	@Test

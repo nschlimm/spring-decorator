@@ -26,14 +26,6 @@ public class SimpleDelegateAnnotationTest {
 	private MyServiceInterface decoratedInterface;
 	
 	/**
-	 * If you inject the delegate in the decorator by class, then the delegate class instance is injected
-	 */
-	@Test
-	public void testDelegateAutowiringInDecorator_DelegateClass() {
-		Assert.isTrue(MyDelegate.class.isAssignableFrom(decorator.getDelegateClass().getClass()));
-	}
-	
-	/**
 	 * If you inject the delegate in the decorator by interface type, then the delegate class instance is injected
 	 */
 	@Test
@@ -57,7 +49,6 @@ public class SimpleDelegateAnnotationTest {
 	@Test
 	public void testDecoratorInterfaceInjection() {
 		Assert.isTrue(decoratedInterface.getClass().equals(MyDecorator.class));
-		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateClass().getClass()));
 		Assert.isTrue(MyDelegate.class.isAssignableFrom(decoratedInterface.getDelegateInterface().getClass()));
 	}
 	

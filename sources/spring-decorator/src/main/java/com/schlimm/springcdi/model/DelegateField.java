@@ -4,10 +4,22 @@ import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
+/**
+ * Wraps the delegate {@link Field} that is declared in a decorator.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 public class DelegateField {
 
+	/**
+	 * The declared field of the decorator class that has the delegate annotation
+	 */
 	private Field delegateField;
 
+	/**
+	 * The dependency descriptor for the delegate field
+	 */
 	private DependencyDescriptor dependencyDescriptor;
 
 	public Field getDeclaredField() {

@@ -9,8 +9,17 @@ import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
+/**
+ * Model bean that aggregates all decorators for a specific delegate target bean.
+ * 
+ * @author Niklas Schlimm
+ * 
+ */
 public class QualifiedDecoratorChain {
 
+	/**
+	 * The decorator chain for the target delegate bean
+	 */
 	List<DecoratorInfo> decorators = new ArrayList<DecoratorInfo>();
 
 	/**
@@ -31,6 +40,21 @@ public class QualifiedDecoratorChain {
 		this.decorators = decorators;
 	}
 
+	/**
+	 * Method determines if a bean described by a given {@link BeanDefinitionHolder} is the successor of another bean described by
+	 * a {@link DependencyDescriptor}.
+	 * 
+	 * If both parameters point to decorator beans: The {@link DependencyDescriptor} must match a {@link DelegateField} of a
+	 * decorator in the chain. The {@link BeanDefinitionHolder} must match a {@link BeanDefinitionHolder} of a
+	 * {@link DecoratorInfo} in the chain.
+	 * 
+	 * @param successorDefinition
+	 *            successor bean
+	 * @param predecessorDescriptor
+	 *            predecessor bean
+	 * @return true if successorDefinition points to a decorator that is the successor of the decorator that the
+	 *         predecessorDescriptor points to
+	 */
 	public boolean areSequential(BeanDefinitionHolder successorDefinition, DependencyDescriptor predecessorDescriptor) {
 		// First decorator cannot be a successor
 		if (successorDefinition.getBeanName().equals(decorators.get(0).getDecoratorBeanDefinitionHolder().getBeanDefinition())) {
@@ -45,7 +69,7 @@ public class QualifiedDecoratorChain {
 		// Both decorators?
 		for (int i = 0; i < decorators.size() - 1; i++) {
 			if (decorators.get(i).getDeclaredDelegateFields().contains(predecessorDescriptor.getField())) {
-				if (successorDefinition.getBeanName().equals(decorators.get(i+1).getDecoratorBeanDefinitionHolder().getBeanName())) {
+				if (successorDefinition.getBeanName().equals(decorators.get(i + 1).getDecoratorBeanDefinitionHolder().getBeanName())) {
 					// Sequential decorators if predessessor matches decorator i and successor matches decorator i + 1
 					return true;
 				}
@@ -62,7 +86,7 @@ public class QualifiedDecoratorChain {
 		}
 		return false;
 	}
-	
+
 	public Set<Field> getAllDeclaredDelegateFields() {
 		Set<Field> set = new HashSet<Field>();
 		for (DecoratorInfo deco : decorators) {

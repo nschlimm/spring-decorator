@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.decorator.Decorator;
+import javax.decorator.Delegate;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -16,6 +17,12 @@ import org.springframework.util.Assert;
 import com.schlimm.springcdi.model.DecoratorInfo;
 import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 
+/**
+ * Class implements the wiring rules for autowiring CDI decorators.
+ * 
+ * @author Niklas Schlimm
+ * 
+ */
 public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	private List<QualifiedDecoratorChain> decoratorChains;
@@ -35,7 +42,23 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 		this.beanFactory = beanFactory;
 	}
 
+	/**
+	 * Main method that is called to check if the given {@link BeanDefinitionHolder} is a candidate for the given injection point
+	 * described by the {@link DependencyDescriptor}.
+	 * 
+	 * @param bdHolder
+	 *            candidate bean
+	 * @param descriptor
+	 *            injection point
+	 * @return true if candidate bean can be wired into injection point
+	 * 
+	 */
 	public boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
+		boolean isDelegateDescriptor = false;
+		if (descriptor.getField().getAnnotation(Delegate.class) != null)
+			isDelegateDescriptor = true;
+		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
+			return true;
 		boolean match = false;
 		if (isDecoratedInjectionPoint(descriptor)) {
 			// Descriptor refers to a decorated target bean => bdHolder bean name must match last decorator bean name of the
@@ -54,6 +77,13 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 		return match;
 	}
 
+	/**
+	 * Method checks if the given descriptor is a decorated injection point. That is, the injection point matches a delegate bean
+	 * definition of a known {@link QualifiedDecoratorChain}.
+	 * 
+	 * @param descriptor injection point to check
+	 * @return true if injection point must be decorated
+	 */
 	public boolean isDecoratedInjectionPoint(DependencyDescriptor descriptor) {
 		// Field is not in a decorator, but descriptor matches a target bean definition
 		if (AnnotationUtils.findAnnotation(descriptor.getField().getDeclaringClass(), Decorator.class) == null) {
@@ -72,6 +102,12 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 		return false;
 	}
 
+	/**
+	 * Get the {@link QualifiedDecoratorChain} for a decorated injection point
+	 * 
+	 * @param decoratedInjectionPoint
+	 * @return {@link QualifiedDecoratorChain} that applies to the injection point
+	 */
 	public QualifiedDecoratorChain getDecoratorChainForDecoratedInjectionPoint(DependencyDescriptor decoratedInjectionPoint) {
 		// Match: a chain contains a target bean definition that matches the target descriptor
 		for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
@@ -109,10 +145,10 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	@Override
 	public boolean executeLogic(Object... arguments) {
-		Assert.isTrue(arguments.length==2, "Expect two arguments!");
+		Assert.isTrue(arguments.length == 2, "Expect two arguments!");
 		Assert.isTrue(arguments[0] instanceof BeanDefinitionHolder);
 		Assert.isTrue(arguments[1] instanceof DependencyDescriptor);
-		return applyDecoratorAutowiringRules((BeanDefinitionHolder)arguments[0], (DependencyDescriptor)arguments[1]);
+		return applyDecoratorAutowiringRules((BeanDefinitionHolder) arguments[0], (DependencyDescriptor) arguments[1]);
 	}
 
 }

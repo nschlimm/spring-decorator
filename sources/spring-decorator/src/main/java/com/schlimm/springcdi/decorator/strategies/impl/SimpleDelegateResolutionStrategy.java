@@ -24,15 +24,15 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 	@Override
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
-		DependencyDescriptor desc = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class });
+		DependencyDescriptor delegateDependencyDescriptor = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { DelegateDependencyDescriptorTag.class });
 		List<String> registeredDelegates = new ArrayList<String>();
 		String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		for (String candidate : candidateNames) {
 			BeanDefinition bd = beanFactory.getBeanDefinition(candidate);
-			// Annotierte Bean aus dem Classpath
+			// Annotated Bean scanned in the classpath
 			if (bd instanceof AnnotatedBeanDefinition) {
 				AnnotatedBeanDefinition abd = (AnnotatedBeanDefinition) bd;
-				// Kein @Decorator
+				// No @Decorator
 				if (!DecoratorInfo.isDecorator(abd)) {
 					Class decoratorClass = null;
 					try {
@@ -40,13 +40,12 @@ public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrat
 					} catch (Exception e) {
 						throw new DecoratorAwareBeanFactoryPostProcessorException("Could not find decorator class: " + abd.getBeanClassName(), e);
 					}
-					// Wenn es ein target object ist, dann die proxy bean definition ziehen, die auch als delegate injected werden
-					// soll
+					// Consider scoped proxies
 					if (candidate.startsWith("scopedTarget.")) {
 						candidate = candidate.replace("scopedTarget.", "");
 					}
-					// Die aktuelle bean definition muss auf den delegate dependency descriptor passen
-					if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(candidate, desc))) {
+					// Bean must match delegate dependency descriptor (that describes the delegate field of the given decorator)
+					if ((((DefaultListableBeanFactory) beanFactory).isAutowireCandidate(candidate, delegateDependencyDescriptor))) {
 						registeredDelegates.add(candidate);
 					}
 				}

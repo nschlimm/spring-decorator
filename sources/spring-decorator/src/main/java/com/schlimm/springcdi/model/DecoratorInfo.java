@@ -16,16 +16,32 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
+/**
+ * Decorator meta-data model bean.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @SuppressWarnings("rawtypes")
 public class DecoratorInfo {
 
+	/**
+	 * The decorator class as defined in the bean definition
+	 */
 	private Class decoratorClass;
 
+	/**
+	 * The bean definition of this decorator
+	 */
 	private BeanDefinitionHolder decoratorBeanDefinitionHolder;
 
+	/**
+	 * All delegate fields of the decoratror. Currently only allows one delegate field.
+	 */
 	private List<DelegateField> delegateFields;
 
 	private static Class<? extends Annotation> decoratorAnnotationType = Decorator.class;
@@ -46,6 +62,7 @@ public class DecoratorInfo {
 				}
 			}
 		});
+		Assert.isTrue(delegateFields.size()==1, "Decorator must have exactly one delegate field!");
 	}
 
 	public boolean equals(DecoratorInfo otherDecoratorInfo) {
@@ -89,6 +106,7 @@ public class DecoratorInfo {
 	}
 
 	public void setDelegateFields(List<DelegateField> delegateFields) {
+		Assert.isTrue(delegateFields.size()==1, "Decorator must have exactly one delegate field!");
 		this.delegateFields = delegateFields;
 	}
 

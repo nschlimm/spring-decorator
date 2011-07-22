@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.decorator.Delegate;
-
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -13,13 +11,11 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 
 import com.schlimm.springcdi.SpringCDIInfrastructure;
 import com.schlimm.springcdi.SpringCDIPlugin;
-import com.schlimm.springcdi.resolver.rules.DelegateDependencyDescriptorTag;
 
 /**
- * {@link AutowireCandidateResolver} that ignores decorator beans for autowiring.
+ * {@link AutowireCandidateResolver} that can wire CDI decorators. 
  * 
- * Decorators and delegate implement the same interface. Therefore decorators are autowiring candidates. Without this resolver
- * dependency resolution results in ambiguous bean candidates for decorated bean.
+ * Clients may register custom rule sets if the wiring logic is not sufficient enough.
  * 
  * @author Niklas Schlimm
  * 
@@ -43,11 +39,9 @@ public class DecoratorAwareAutowireCandidateResolver extends QualifierAnnotation
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		// First check qualifiers
 		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
+		// Raw result has priority, if false candidate cannot be injected
 		if (rawResult==false) return rawResult;
-		boolean isDelegateDescriptor = false;
-		if (descriptor.getField().getAnnotation(Delegate.class)!=null) isDelegateDescriptor = true;
-		if (descriptor instanceof DelegateDependencyDescriptorTag || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
-			return rawResult;
+		// Check registered wiring rules
 		boolean ruleSetResultOK = true;
 		for (SpringCDIPlugin rulePlugin : rulePlugins) {
 			boolean rulesResultOK = rulePlugin.executeLogic(bdHolder, descriptor);
