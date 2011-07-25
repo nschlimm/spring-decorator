@@ -23,6 +23,7 @@ import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorOrderingSt
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
 import com.schlimm.springcdi.model.DecoratorInfo;
+import com.schlimm.springcdi.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
 import com.schlimm.springcdi.resolver.rules.DecoratorAutowiringRules;
@@ -69,7 +70,9 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		Map<String, Class> decorators = decoratorResolutionStrategy.getRegisteredDecorators(beanFactory);
 		List<QualifiedDecoratorChain> chains = buildQualifiedDecoratorChains(beanFactory, decorators);
 		registerAutowireCandidateResolver(beanFactory, chains);
-
+		DecoratorMetaDataBean metaData = new DecoratorMetaDataBean(chains);
+		beanFactory.registerSingleton("decoratorMetaData", metaData);
+		
 	}
 
 	/**
