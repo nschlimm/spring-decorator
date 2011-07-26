@@ -7,11 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
-import org.springframework.util.ReflectionUtils;
-
-import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 
 /**
  * Model bean that aggregates all decorators for a specific delegate target bean.
@@ -101,25 +97,6 @@ public class QualifiedDecoratorChain {
 
 	public void addDecoratorInfo(DecoratorInfo decoratorInfo) {
 		decorators.add(decoratorInfo);
-	}
-
-	public Object getChainedDecorators(ConfigurableListableBeanFactory beanFactory, Object delegate) {
-		for (int i = 0; i < decorators.size(); i++) {
-			Object predecessor = beanFactory.getBean(decorators.get(i).getDecoratorBeanDefinitionHolder().getBeanName());
-			Object successor = delegate;
-			if (i < decorators.size() - 1) {
-				// inject succeeding decorator
-				successor = beanFactory.getBean(decorators.get(i).getDecoratorBeanDefinitionHolder().getBeanName());
-			}
-			ReflectionUtils.makeAccessible(decorators.get(i).getDelegateFields().get(0).getDeclaredField());
-			try {
-				Field delegateField = decorators.get(i).getDelegateFields().get(0).getDeclaredField();
-				delegateField.set(predecessor, successor);
-			} catch (Exception e) {
-				throw new DecoratorAwareBeanFactoryPostProcessorException("Could not set decorator field!", e);
-			} 
-		}
-		return beanFactory.getBean(decorators.get(0).getDecoratorBeanDefinitionHolder().getBeanName());
 	}
 
 	public void setDelegateBeanDefinitionHolder(BeanDefinitionHolder delegateBeanDefinitionHolder) {

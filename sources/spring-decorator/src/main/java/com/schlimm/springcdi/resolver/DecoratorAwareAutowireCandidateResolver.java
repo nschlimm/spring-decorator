@@ -39,8 +39,6 @@ public class DecoratorAwareAutowireCandidateResolver extends QualifierAnnotation
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		// First check qualifiers
 		boolean rawResult = super.isAutowireCandidate(bdHolder, descriptor);
-		// Raw result has priority, if false candidate cannot be injected
-		if (rawResult==false) return rawResult;
 		// Check registered wiring rules
 		boolean ruleSetResultOK = true;
 		for (SpringCDIPlugin rulePlugin : rulePlugins) {

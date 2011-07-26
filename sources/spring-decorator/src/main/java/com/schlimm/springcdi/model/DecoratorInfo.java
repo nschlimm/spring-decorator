@@ -50,6 +50,13 @@ public class DecoratorInfo {
 		return AnnotationUtils.findAnnotation(candidate, Decorator.class) != null;
 	}
 
+	public static boolean isDecorator(DependencyDescriptor dependencyDescriptor) {
+		if (AnnotationUtils.findAnnotation(dependencyDescriptor.getField().getDeclaringClass(), Decorator.class) != null) {
+			return true;
+		}
+		return false;
+	}
+
 	public DecoratorInfo(String beanName, BeanDefinition beanDefinition, Class decoratorClass) {
 		this.decoratorClass = decoratorClass;
 		decoratorBeanDefinitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);

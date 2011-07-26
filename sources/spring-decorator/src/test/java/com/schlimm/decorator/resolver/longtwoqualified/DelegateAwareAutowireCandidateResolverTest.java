@@ -13,6 +13,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
@@ -27,6 +28,7 @@ import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 @ContextConfiguration("/test-context-decorator-resolver-long-two-qualified-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class DelegateAwareAutowireCandidateResolverTest {
 
 	@Autowired

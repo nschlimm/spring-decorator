@@ -12,6 +12,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
 
@@ -26,6 +27,7 @@ import com.schlimm.springcdi.model.DecoratorInfo;
 import com.schlimm.springcdi.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.resolver.rules.BeanPostProcessorCDIAutowiringRules;
 import com.schlimm.springcdi.resolver.rules.DecoratorAutowiringRules;
 import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
@@ -41,6 +43,12 @@ import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 @SuppressWarnings("rawtypes")
 public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered, InitializingBean {
 
+	private static final String DECORATOR_POSTPROCESSOR_NAME = "_decoratorPostprocessor";
+
+	private static final String RESOLVER = "resolver";
+
+	private static final String PROCESSOR = "processor";
+
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private DecoratorResolutionStrategy decoratorResolutionStrategy;
@@ -50,6 +58,8 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	private DecoratorAutowiringRules decoratorAutowiringRules;
 	
 	private DecoratorOrderingStrategy decoratorOrderingStrategy;
+	
+	private String mode = PROCESSOR;
 
 	public DecoratorAwareBeanFactoryPostProcessor() {
 		super();
@@ -70,9 +80,25 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		Map<String, Class> decorators = decoratorResolutionStrategy.getRegisteredDecorators(beanFactory);
 		List<QualifiedDecoratorChain> chains = buildQualifiedDecoratorChains(beanFactory, decorators);
 		registerAutowireCandidateResolver(beanFactory, chains);
-		DecoratorMetaDataBean metaData = new DecoratorMetaDataBean(chains);
-		beanFactory.registerSingleton("decoratorMetaData", metaData);
+		registerDecoratorMetadataBean(beanFactory, chains);
 		
+		if (PROCESSOR.equals(getMode())) {
+			((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(DECORATOR_POSTPROCESSOR_NAME, BeanDefinitionBuilder.rootBeanDefinition(DecoratorAwareBeanPostProcessor.class).getBeanDefinition());
+			if (beanFactory.getBeanNamesForType(DecoratorAwareBeanPostProcessor.class)==null) {
+				throw new DecoratorAwareBeanFactoryPostProcessorException("Mode 'resolver' requires DecoratorAwareBeanPostProcessor registered!");
+			}
+		}
+		
+	}
+
+	private void registerDecoratorMetadataBean(ConfigurableListableBeanFactory beanFactory, List<QualifiedDecoratorChain> chains) {
+		if (beanFactory.containsBean("decoratorMetaData")) {
+			DecoratorMetaDataBean metaData = (DecoratorMetaDataBean)beanFactory.getBean("decoratorMetaData");
+			metaData.setDecoratorChains(chains);
+		} else {
+			DecoratorMetaDataBean metaData = new DecoratorMetaDataBean(chains);
+			beanFactory.registerSingleton("decoratorMetaData", metaData);
+		}
 	}
 
 	/**
@@ -93,8 +119,11 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			newResolver.setBeanFactory(beanFactory);
 			((DefaultListableBeanFactory) beanFactory).setAutowireCandidateResolver(newResolver);
 			
-			if (decoratorAutowiringRules == null) {
+			if (RESOLVER.equals(getMode()) && decoratorAutowiringRules == null) {
 				decoratorAutowiringRules = new SimpleCDIAutowiringRules(chains, newResolver, beanFactory);
+			}
+			if (PROCESSOR.equals(getMode()) && decoratorAutowiringRules == null) {
+				decoratorAutowiringRules = new BeanPostProcessorCDIAutowiringRules(chains, newResolver, beanFactory);
 			}
 			newResolver.addPlugin(decoratorAutowiringRules);
 		}
@@ -148,6 +177,14 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		if (decoratorOrderingStrategy == null) {
 			decoratorOrderingStrategy = new SimpleDecoratorOrderingStrategy();
 		}
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getMode() {
+		return mode;
 	}
 
 }

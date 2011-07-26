@@ -68,7 +68,7 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 			if (firstDecoratorInfo.getDecoratorBeanDefinitionHolder().getBeanName().equals(bdHolder.getBeanName())) {
 				return true;
 			}
-		} else if (isDecorator(descriptor)) {
+		} else if (DecoratorInfo.isDecorator(descriptor)) {
 			QualifiedDecoratorChain chain = getDecoratorChainForDecoratorDescriptor(descriptor);
 			// descriptor must be predecessor decorator for bdHolder
 			if (chain.areSequential(bdHolder, descriptor))
@@ -120,13 +120,6 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 			}
 		}
 		return null;
-	}
-
-	public boolean isDecorator(DependencyDescriptor dependencyDescriptor) {
-		if (AnnotationUtils.findAnnotation(dependencyDescriptor.getField().getDeclaringClass(), Decorator.class) != null) {
-			return true;
-		}
-		return false;
 	}
 
 	public QualifiedDecoratorChain getDecoratorChainForDecoratorDescriptor(DependencyDescriptor decoratorDescriptor) {
