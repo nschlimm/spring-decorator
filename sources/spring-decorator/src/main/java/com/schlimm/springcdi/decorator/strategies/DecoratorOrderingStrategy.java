@@ -1,6 +1,6 @@
 package com.schlimm.springcdi.decorator.strategies;
 
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
  * Strategy interface for ordering decorators in a {@link QualifiedDecoratorChain}.

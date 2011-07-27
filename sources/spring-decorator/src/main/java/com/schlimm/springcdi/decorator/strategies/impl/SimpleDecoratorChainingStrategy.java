@@ -6,8 +6,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.ReflectionUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.decorator.strategies.DecoratorChainingStrategy;
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 
 public class SimpleDecoratorChainingStrategy implements DecoratorChainingStrategy {
 

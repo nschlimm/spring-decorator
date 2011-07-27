@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.resolver;
+package com.schlimm.springcdi.decorator.resolver;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;

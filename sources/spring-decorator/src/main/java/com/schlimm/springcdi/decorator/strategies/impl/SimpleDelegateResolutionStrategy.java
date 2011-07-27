@@ -12,11 +12,11 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.model.DecoratorInfo;
+import com.schlimm.springcdi.decorator.model.DelegateField;
+import com.schlimm.springcdi.decorator.resolver.rules.IgnoreDecoratorAutowiringLogic;
+import com.schlimm.springcdi.decorator.resolver.rules.RuleUtils;
 import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
-import com.schlimm.springcdi.model.DecoratorInfo;
-import com.schlimm.springcdi.model.DelegateField;
-import com.schlimm.springcdi.resolver.rules.IgnoreDecoratorAutowiringLogic;
-import com.schlimm.springcdi.resolver.rules.RuleUtils;
 
 public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrategy {
 

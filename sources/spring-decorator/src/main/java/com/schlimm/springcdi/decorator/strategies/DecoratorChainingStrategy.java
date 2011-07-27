@@ -2,7 +2,7 @@ package com.schlimm.springcdi.decorator.strategies;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 public interface DecoratorChainingStrategy {
 

@@ -1,7 +1,7 @@
 package com.schlimm.springcdi;
 
-import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
-import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.decorator.resolver.rules.SimpleCDIAutowiringRules;
 
 /**
  * Interface implemented by Spring-CDI plugins. Enables registry of rule set plugin with {@link DecoratorAwareAutowireCandidateResolver}.

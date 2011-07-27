@@ -1,8 +1,8 @@
 package com.schlimm.springcdi.decorator.strategies.impl;
 
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.decorator.strategies.DecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
 
 /**
  * Simple ordering strategy just orders decorators as found in the {@link DecoratorResolutionStrategy}.

@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.resolver.rules;
+package com.schlimm.springcdi.decorator.resolver.rules;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;

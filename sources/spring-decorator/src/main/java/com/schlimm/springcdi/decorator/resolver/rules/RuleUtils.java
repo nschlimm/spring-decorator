@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.resolver.rules;
+package com.schlimm.springcdi.decorator.resolver.rules;
 
 import java.lang.reflect.Field;
 

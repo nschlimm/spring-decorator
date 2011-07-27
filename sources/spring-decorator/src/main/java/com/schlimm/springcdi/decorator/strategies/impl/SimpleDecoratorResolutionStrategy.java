@@ -9,8 +9,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
-import com.schlimm.springcdi.model.DecoratorInfo;
 
 @SuppressWarnings("rawtypes")
 public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStrategy {

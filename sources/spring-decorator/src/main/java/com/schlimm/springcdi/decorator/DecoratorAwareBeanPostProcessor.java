@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.decorator.strategies.DecoratorChainingStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorChainingStrategy;
-import com.schlimm.springcdi.model.DecoratorMetaDataBean;
 
 public class DecoratorAwareBeanPostProcessor implements BeanPostProcessor, InitializingBean {
 

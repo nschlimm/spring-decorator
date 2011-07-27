@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.resolver.rules;
+package com.schlimm.springcdi.decorator.resolver.rules;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -14,8 +14,8 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
-import com.schlimm.springcdi.model.DecoratorInfo;
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.model.DecoratorInfo;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
  * Class implements the wiring rules for autowiring CDI decorators.

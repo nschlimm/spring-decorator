@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.model;
+package com.schlimm.springcdi.decorator.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

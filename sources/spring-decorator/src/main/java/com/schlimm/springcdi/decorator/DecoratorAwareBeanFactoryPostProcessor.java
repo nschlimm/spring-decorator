@@ -17,19 +17,19 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
 
 import com.schlimm.springcdi.SpringCDIInfrastructure;
+import com.schlimm.springcdi.decorator.model.DecoratorInfo;
+import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.decorator.resolver.rules.BeanPostProcessorCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.rules.DecoratorAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.rules.SimpleCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.strategies.DecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
-import com.schlimm.springcdi.model.DecoratorInfo;
-import com.schlimm.springcdi.model.DecoratorMetaDataBean;
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
-import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
-import com.schlimm.springcdi.resolver.rules.BeanPostProcessorCDIAutowiringRules;
-import com.schlimm.springcdi.resolver.rules.DecoratorAutowiringRules;
-import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 /**
  * This {@link BeanFactoryPostProcessor} can deal with JSR-299 CDI @Decorator and @Delegate annotations.

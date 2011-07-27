@@ -19,12 +19,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
+import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
+import com.schlimm.springcdi.decorator.resolver.rules.SimpleCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
-import com.schlimm.springcdi.model.QualifiedDecoratorChain;
-import com.schlimm.springcdi.resolver.DecoratorAwareAutowireCandidateResolver;
-import com.schlimm.springcdi.resolver.rules.SimpleCDIAutowiringRules;
 
 @ContextConfiguration("/test-context-decorator-resolver-long-two-qualified-chains.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
