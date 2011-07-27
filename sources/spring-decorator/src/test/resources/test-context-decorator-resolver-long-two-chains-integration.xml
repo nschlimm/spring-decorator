@@ -8,11 +8,11 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="com.schlimm.decorator.resolver.longsinglechain" scoped-proxy="targetClass">
+	<context:component-scan base-package="com.schlimm.springcdi.decorator.resolver.longsinglechain" scoped-proxy="targetClass">
 		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
-	<context:component-scan base-package="com.schlimm.decorator.resolver.longtwochains" scoped-proxy="targetClass">
+	<context:component-scan base-package="com.schlimm.springcdi.decorator.resolver.longtwochains" scoped-proxy="targetClass">
 		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
@@ -36,7 +36,7 @@
 		<property name="scopes">
 			<map>
 				<entry key="session">
-					<bean class="com.schlimm.decorator.testsupport.SetupSession" />
+					<bean class="com.schlimm.springcdi.decorator.testsupport.SetupSession" />
 				</entry>
 			</map>
 		</property>

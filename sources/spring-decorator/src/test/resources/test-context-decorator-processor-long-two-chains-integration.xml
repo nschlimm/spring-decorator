@@ -12,6 +12,10 @@
 		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
 	</context:component-scan>
 
+	<context:component-scan base-package="com.schlimm.springcdi.decorator.resolver.longtwochains" scoped-proxy="targetClass">
+		<context:include-filter type="annotation" expression="javax.decorator.Decorator" />
+	</context:component-scan>
+
 	<bean
 		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor">
 		<property name="autowiredAnnotationTypes">
@@ -22,6 +26,8 @@
 			</set>
 		</property>
 	</bean>
+
+	<bean class="com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor"/>
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">
