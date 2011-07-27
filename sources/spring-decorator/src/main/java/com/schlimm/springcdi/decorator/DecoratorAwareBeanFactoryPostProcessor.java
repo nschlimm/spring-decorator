@@ -20,6 +20,7 @@ import com.schlimm.springcdi.SpringCDIInfrastructure;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
+import com.schlimm.springcdi.decorator.processor.DecoratorAwareBeanPostProcessor;
 import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
 import com.schlimm.springcdi.decorator.resolver.rules.BeanPostProcessorCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.resolver.rules.DecoratorAutowiringRules;

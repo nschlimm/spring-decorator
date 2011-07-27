@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.decorator;
+package com.schlimm.springcdi.decorator.processor;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.target.SimpleBeanTargetSource;

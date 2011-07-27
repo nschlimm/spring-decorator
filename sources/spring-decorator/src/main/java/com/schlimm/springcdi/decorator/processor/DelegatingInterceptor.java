@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.decorator;
+package com.schlimm.springcdi.decorator.processor;
 
 import java.lang.reflect.Method;
 
@@ -6,6 +6,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.util.ReflectionUtils;
+
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 
 public class DelegatingInterceptor implements MethodInterceptor {
 
