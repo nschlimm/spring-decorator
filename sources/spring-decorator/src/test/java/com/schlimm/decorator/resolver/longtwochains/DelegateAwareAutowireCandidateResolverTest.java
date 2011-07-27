@@ -51,6 +51,7 @@ public class DelegateAwareAutowireCandidateResolverTest {
 	@Before
 	public void setUp() {
 		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy(), null, new SimpleDecoratorOrderingStrategy());
+		beanPostProcessor.setMode("resolver");
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
 		resolver = (DecoratorAwareAutowireCandidateResolver) ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
 		List<QualifiedDecoratorChain> chains = ((SimpleCDIAutowiringRules)resolver.getPlugins().iterator().next()).getDecoratorChains();

@@ -24,7 +24,9 @@
 		</property>
 	</bean>
 
-	<bean class="com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor"/>
+	<bean class="com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor">
+		<property name="mode" value="resolver"/>
+	</bean>
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">

@@ -33,6 +33,7 @@ public class DecoratorAwareBeanFactoryPostProcessorTest {
 	@Before
 	public void setUp() {
 		beanPostProcessor = new DecoratorAwareBeanFactoryPostProcessor(new SimpleDecoratorResolutionStrategy(), new SimpleDelegateResolutionStrategy(), null, new SimpleDecoratorOrderingStrategy());
+		beanPostProcessor.setMode("resolver");
 	}
 	
 	@Test
