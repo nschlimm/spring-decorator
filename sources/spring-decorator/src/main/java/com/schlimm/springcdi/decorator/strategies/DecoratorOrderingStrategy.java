@@ -10,6 +10,11 @@ import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
  */
 public interface DecoratorOrderingStrategy {
 	
+	/**
+	 * Orders the decorators of the given {@link QualifiedDecoratorChain}
+	 * @param chain decorators that should be ordered
+	 * @return chain with ordered decorators
+	 */
 	QualifiedDecoratorChain orderDecorators(QualifiedDecoratorChain chain);
 
 }

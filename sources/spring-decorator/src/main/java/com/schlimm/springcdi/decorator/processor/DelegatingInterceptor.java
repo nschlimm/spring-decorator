@@ -9,8 +9,17 @@ import org.springframework.util.ReflectionUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 
+/**
+ * {@link MethodInterceptor} that delegates all method calls to the registered delegate.
+ * 
+ * @author Niklas Schlimm
+ * 
+ */
 public class DelegatingInterceptor implements MethodInterceptor {
 
+	/**
+	 * The decorator chain to delegate to
+	 */
 	private Object decoratorChain;
 
 	public DelegatingInterceptor(Object decoratorChain) {
@@ -18,6 +27,10 @@ public class DelegatingInterceptor implements MethodInterceptor {
 		this.decoratorChain = decoratorChain;
 	}
 
+	/**
+	 * If the called method exists on the delegate object, then the delegate object will be called. Otherwise the call is
+	 * forwarded to the proxy target object.
+	 */
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Object retVal = null;

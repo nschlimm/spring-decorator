@@ -24,7 +24,7 @@ import com.schlimm.springcdi.decorator.processor.DecoratorAwareBeanPostProcessor
 import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
 import com.schlimm.springcdi.decorator.resolver.rules.BeanPostProcessorCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.resolver.rules.DecoratorAutowiringRules;
-import com.schlimm.springcdi.decorator.resolver.rules.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.rules.ResolverCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.strategies.DecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
@@ -35,8 +35,9 @@ import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionS
 /**
  * This {@link BeanFactoryPostProcessor} can deal with JSR-299 CDI @Decorator and @Delegate annotations.
  * 
- * It determines all registered decorarors in the given bean factory. For eaxch delegate bean it will generate {@link QualifiedDecoratorChain}.
- * The {@link QualifiedDecoratorChain} holds all meta data required for autowiring in the {@link DecoratorAwareAutowireCandidateResolver}.
+ * It determines all registered decorarors in the given bean factory. For each delegate bean it will generate
+ * {@link QualifiedDecoratorChain}. The {@link QualifiedDecoratorChain} holds all meta data required for autowiring in the
+ * {@link DecoratorAwareAutowireCandidateResolver} or {@link DecoratorAwareBeanPostProcessor}.
  * 
  * @author Niklas Schlimm
  * 
@@ -57,9 +58,9 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	private DelegateResolutionStrategy delegateResolutionStrategy;
 
 	private DecoratorAutowiringRules decoratorAutowiringRules;
-	
+
 	private DecoratorOrderingStrategy decoratorOrderingStrategy;
-	
+
 	private String mode = PROCESSOR;
 
 	public DecoratorAwareBeanFactoryPostProcessor() {
@@ -75,26 +76,26 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 		this.decoratorOrderingStrategy = decoratorOrderingStrategy;
 	}
 
-
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
 		Map<String, Class> decorators = decoratorResolutionStrategy.getRegisteredDecorators(beanFactory);
 		List<QualifiedDecoratorChain> chains = buildQualifiedDecoratorChains(beanFactory, decorators);
 		registerAutowireCandidateResolver(beanFactory, chains);
 		registerDecoratorMetadataBean(beanFactory, chains);
-		
+
 		if (PROCESSOR.equals(getMode())) {
-			((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(DECORATOR_POSTPROCESSOR_NAME, BeanDefinitionBuilder.rootBeanDefinition(DecoratorAwareBeanPostProcessor.class).getBeanDefinition());
-			if (beanFactory.getBeanNamesForType(DecoratorAwareBeanPostProcessor.class)==null) {
+			((DefaultListableBeanFactory) beanFactory).registerBeanDefinition(DECORATOR_POSTPROCESSOR_NAME, BeanDefinitionBuilder.rootBeanDefinition(DecoratorAwareBeanPostProcessor.class)
+					.getBeanDefinition());
+			if (beanFactory.getBeanNamesForType(DecoratorAwareBeanPostProcessor.class) == null) {
 				throw new DecoratorAwareBeanFactoryPostProcessorException("Mode 'resolver' requires DecoratorAwareBeanPostProcessor registered!");
 			}
 		}
-		
+
 	}
 
 	private void registerDecoratorMetadataBean(ConfigurableListableBeanFactory beanFactory, List<QualifiedDecoratorChain> chains) {
 		if (beanFactory.containsBean("decoratorMetaData")) {
-			DecoratorMetaDataBean metaData = (DecoratorMetaDataBean)beanFactory.getBean("decoratorMetaData");
+			DecoratorMetaDataBean metaData = (DecoratorMetaDataBean) beanFactory.getBean("decoratorMetaData");
 			metaData.setDecoratorChains(chains);
 		} else {
 			DecoratorMetaDataBean metaData = new DecoratorMetaDataBean(chains);
@@ -105,23 +106,25 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	/**
 	 * Registers the {@link AutowireCandidateResolver}, more specifically the {@link DecoratorAutowiringRules} with the resolver.
 	 * If the bean is already configured with a {@link SpringCDIInfrastructure} candidate resolver, then this method just adds the
-	 * {@link DecoratorAutowiringRules} plugin to that current resolver. Otherwise it will create the {@link DecoratorAwareAutowireCandidateResolver}
-	 * and set it on the bean facrory given.
+	 * {@link DecoratorAutowiringRules} plugin to that current resolver. Otherwise it will create the
+	 * {@link DecoratorAwareAutowireCandidateResolver} and set it on the bean facrory given.
 	 * 
-	 * @param beanFactory the factory to set the autowire candidate resolver
-	 * @param chains the qualified decorator chains
+	 * @param beanFactory
+	 *            the factory to set the autowire candidate resolver
+	 * @param chains
+	 *            the qualified decorator chains
 	 */
 	private void registerAutowireCandidateResolver(ConfigurableListableBeanFactory beanFactory, List<QualifiedDecoratorChain> chains) {
 		AutowireCandidateResolver resolver = ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
 		if (resolver != null && resolver instanceof SpringCDIInfrastructure) {
-			((SpringCDIInfrastructure)resolver).addPlugin(decoratorAutowiringRules == null ? new SimpleCDIAutowiringRules(chains, resolver, beanFactory) : decoratorAutowiringRules);
+			((SpringCDIInfrastructure) resolver).addPlugin(decoratorAutowiringRules == null ? new ResolverCDIAutowiringRules(chains, resolver, beanFactory) : decoratorAutowiringRules);
 		} else {
 			DecoratorAwareAutowireCandidateResolver newResolver = new DecoratorAwareAutowireCandidateResolver();
 			newResolver.setBeanFactory(beanFactory);
 			((DefaultListableBeanFactory) beanFactory).setAutowireCandidateResolver(newResolver);
-			
+
 			if (RESOLVER.equals(getMode()) && decoratorAutowiringRules == null) {
-				decoratorAutowiringRules = new SimpleCDIAutowiringRules(chains, newResolver, beanFactory);
+				decoratorAutowiringRules = new ResolverCDIAutowiringRules(chains, newResolver, beanFactory);
 			}
 			if (PROCESSOR.equals(getMode()) && decoratorAutowiringRules == null) {
 				decoratorAutowiringRules = new BeanPostProcessorCDIAutowiringRules(chains, newResolver, beanFactory);
@@ -131,11 +134,13 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 	}
 
 	/**
-	 * Builds all {@link QualifiedDecoratorChain}. Every target delegate bean has exactly one decorator chain. Every decorator is exclusive
-	 * for one delegate target bean.
+	 * Builds all {@link QualifiedDecoratorChain}. Every target delegate bean has exactly one decorator chain. Every decorator is
+	 * exclusive for one delegate target bean.
 	 * 
-	 * @param beanFactory the current bean factory
-	 * @param decorators the decorators registered in the given bean factory
+	 * @param beanFactory
+	 *            the current bean factory
+	 * @param decorators
+	 *            the decorators registered in the given bean factory
 	 * @return the qualified decorator chains
 	 */
 	private List<QualifiedDecoratorChain> buildQualifiedDecoratorChains(ConfigurableListableBeanFactory beanFactory, Map<String, Class> decorators) {

@@ -11,10 +11,13 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
- * Class implements the wiring rules for autowiring CDI decorators.
+ * Class implements the wiring rules for autowiring CDI decorators when {@link DecoratorAwareBeanFactoryPostProcessorException}
+ * mode is set to 'processor'.
  * 
  * @author Niklas Schlimm
  * 
@@ -39,7 +42,6 @@ public class BeanPostProcessorCDIAutowiringRules implements DecoratorAutowiringR
 		this.beanFactory = beanFactory;
 	}
 
-
 	@Override
 	public boolean executeLogic(Object... arguments) {
 		Assert.isTrue(arguments.length == 2, "Expect two arguments!");
@@ -50,7 +52,7 @@ public class BeanPostProcessorCDIAutowiringRules implements DecoratorAutowiringR
 
 	@Override
 	public boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		if (AnnotationUtils.findAnnotation(beanFactory.getType(bdHolder.getBeanName()), Decorator.class)!=null) {
+		if (DecoratorInfo.isDecorator(beanFactory.getType(bdHolder.getBeanName()))) {
 			return false;
 		}
 		return true;

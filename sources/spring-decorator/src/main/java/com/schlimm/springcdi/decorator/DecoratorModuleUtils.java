@@ -1,4 +1,4 @@
-package com.schlimm.springcdi.decorator.resolver.rules;
+package com.schlimm.springcdi.decorator;
 
 import java.lang.reflect.Field;
 
@@ -7,7 +7,13 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
-public class RuleUtils {
+/**
+ * Reused methods in this Spring-CDI module.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
+public class DecoratorModuleUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static DependencyDescriptor createRuleBasedDescriptor(Field field, Class[] ruleTags) {

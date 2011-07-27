@@ -79,14 +79,10 @@ public class QualifiedDecoratorChain {
 		return false;
 	}
 
-	public boolean isKnownDecorator(DecoratorInfo decoratorInfo) {
-		for (DecoratorInfo decorator : decorators) {
-			if (decorator.equals(decoratorInfo))
-				return true;
-		}
-		return false;
-	}
-
+	/**
+	 * Get all declared delegate fields of the decorators of this chain.
+	 * @return all declared delegate fields
+	 */
 	public Set<Field> getAllDeclaredDelegateFields() {
 		Set<Field> set = new HashSet<Field>();
 		for (DecoratorInfo deco : decorators) {

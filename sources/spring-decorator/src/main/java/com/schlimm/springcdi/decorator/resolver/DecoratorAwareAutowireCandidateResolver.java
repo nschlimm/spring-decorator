@@ -11,11 +11,18 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 
 import com.schlimm.springcdi.SpringCDIInfrastructure;
 import com.schlimm.springcdi.SpringCDIPlugin;
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.resolver.rules.BeanPostProcessorCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.rules.ResolverCDIAutowiringRules;
 
 /**
- * {@link AutowireCandidateResolver} that can wire CDI decorators. 
+ * {@link AutowireCandidateResolver} that can deal with JSR-299 patterns.
  * 
- * Clients may register custom rule sets if the wiring logic is not sufficient enough.
+ * Clients may register custom rule sets if the wiring logic is not sufficient enough. If
+ * {@link DecoratorAwareBeanFactoryPostProcessorException} mode is set to 'resolver' then {@link ResolverCDIAutowiringRules} are
+ * in use here. If mode is set to 'processor' then {@link BeanPostProcessorCDIAutowiringRules} are in use.
+ * 
+ * This class is a {@link SpringCDIInfrastructure} bean. It can deal with additional CDI rules from other Spring-CDI modules.
  * 
  * @author Niklas Schlimm
  * 

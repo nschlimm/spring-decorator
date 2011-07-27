@@ -12,9 +12,17 @@ import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorExc
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.strategies.DecoratorResolutionStrategy;
 
+/**
+ * Simple strategy that searches bean definitions for decorators.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @SuppressWarnings("rawtypes")
 public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStrategy {
 
+	private static final String SCOPED_TARGET = "scopedTarget.";
+	
 	private HashMap<String, Class> registeredDecoratorsCache;
 
 	public Map<String, Class> getRegisteredDecorators(ConfigurableListableBeanFactory beanFactory) {
@@ -33,11 +41,11 @@ public class SimpleDecoratorResolutionStrategy implements DecoratorResolutionStr
 						} catch (Exception e) {
 							throw new DecoratorAwareBeanFactoryPostProcessorException("Could not find decorator class: " + abd.getBeanClassName(), e);
 						} 
-						if (bdName.startsWith("scopedTarget.")) {
-							bd = beanFactory.getBeanDefinition(bdName.replace("scopedTarget.", ""));
+						if (bdName.startsWith(SCOPED_TARGET)) {
+							bd = beanFactory.getBeanDefinition(bdName.replace(SCOPED_TARGET, ""));
 						}
 						if (bd.isAutowireCandidate()) {
-							definitions.put(bdName.replace("scopedTarget.", ""), decoratorClass);
+							definitions.put(bdName.replace(SCOPED_TARGET, ""), decoratorClass);
 						} 
 					}
 				}

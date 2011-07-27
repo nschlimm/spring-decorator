@@ -12,19 +12,25 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.DecoratorModuleUtils;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.DelegateField;
 import com.schlimm.springcdi.decorator.resolver.rules.IgnoreDecoratorAutowiringLogic;
-import com.schlimm.springcdi.decorator.resolver.rules.RuleUtils;
 import com.schlimm.springcdi.decorator.strategies.DelegateResolutionStrategy;
 
+/**
+ * Simple strategy that searches the delegate for the given decorator.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 public class SimpleDelegateResolutionStrategy implements DelegateResolutionStrategy {
 
 	@SuppressWarnings({ "rawtypes", "unused" })
 	@Override
 	public String getRegisteredDelegate(ConfigurableListableBeanFactory beanFactory, DecoratorInfo decoratorInfo) {
 		DelegateField arbitraryDelegateField = decoratorInfo.getDelegateFields().get(0);
-		DependencyDescriptor delegateDependencyDescriptor = RuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { IgnoreDecoratorAutowiringLogic.class });
+		DependencyDescriptor delegateDependencyDescriptor = DecoratorModuleUtils.createRuleBasedDescriptor(arbitraryDelegateField.getDeclaredField(), new Class[] { IgnoreDecoratorAutowiringLogic.class });
 		List<String> registeredDelegates = new ArrayList<String>();
 		String[] candidateNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, arbitraryDelegateField.getDeclaredField().getType(), true, false);
 		for (String candidate : candidateNames) {

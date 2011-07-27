@@ -21,7 +21,7 @@ import org.springframework.util.Assert;
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.decorator.resolver.DecoratorAwareAutowireCandidateResolver;
-import com.schlimm.springcdi.decorator.resolver.rules.SimpleCDIAutowiringRules;
+import com.schlimm.springcdi.decorator.resolver.rules.ResolverCDIAutowiringRules;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorOrderingStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorResolutionStrategy;
 import com.schlimm.springcdi.decorator.strategies.impl.SimpleDelegateResolutionStrategy;
@@ -54,7 +54,7 @@ public class DelegateAwareAutowireCandidateResolverTest {
 		beanPostProcessor.setMode("resolver");
 		beanPostProcessor.postProcessBeanFactory(beanFactory);
 		resolver = (DecoratorAwareAutowireCandidateResolver) ((DefaultListableBeanFactory) beanFactory).getAutowireCandidateResolver();
-		List<QualifiedDecoratorChain> chains = ((SimpleCDIAutowiringRules)resolver.getPlugins().iterator().next()).getDecoratorChains();
+		List<QualifiedDecoratorChain> chains = ((ResolverCDIAutowiringRules)resolver.getPlugins().iterator().next()).getDecoratorChains();
 		// QualifiedDecoratorChain chainMy= chains.get(0).getDelegateBeanDefinitionHolder().getBeanName().equals("myDelegate") ?
 		// chains.get(0) : chains.get(1);
 		try {

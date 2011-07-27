@@ -4,26 +4,27 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.AutowireCandidateResolver;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.DecoratorModuleUtils;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
- * Class implements the wiring rules for autowiring CDI decorators.
+ * Class implements the wiring rules for autowiring CDI decorators. This rule set is used when
+ * {@link DecoratorAwareBeanFactoryPostProcessorException} mode is set to 'resolver'.
  * 
  * @author Niklas Schlimm
  * 
  */
-public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
+public class ResolverCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	private List<QualifiedDecoratorChain> decoratorChains;
 
@@ -31,11 +32,11 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	public SimpleCDIAutowiringRules() {
+	public ResolverCDIAutowiringRules() {
 		super();
 	}
 
-	public SimpleCDIAutowiringRules(List<QualifiedDecoratorChain> decoratorChains, AutowireCandidateResolver resolver, ConfigurableListableBeanFactory beanFactory) {
+	public ResolverCDIAutowiringRules(List<QualifiedDecoratorChain> decoratorChains, AutowireCandidateResolver resolver, ConfigurableListableBeanFactory beanFactory) {
 		super();
 		this.decoratorChains = decoratorChains;
 		this.resolver = resolver;
@@ -81,19 +82,20 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 	 * Method checks if the given descriptor is a decorated injection point. That is, the injection point matches a delegate bean
 	 * definition of a known {@link QualifiedDecoratorChain}.
 	 * 
-	 * @param descriptor injection point to check
+	 * @param descriptor
+	 *            injection point to check
 	 * @return true if injection point must be decorated
 	 */
 	public boolean isDecoratedInjectionPoint(DependencyDescriptor descriptor) {
 		// Field is not in a decorator, but descriptor matches a target bean definition
-		if (AnnotationUtils.findAnnotation(descriptor.getField().getDeclaringClass(), Decorator.class) == null) {
+		if (!DecoratorInfo.isDecorator(descriptor.getField().getDeclaringClass())) {
 			// Now that we know, that we're aoutside a @Decorator:
 			// is there a chain that contains a target delegate bean definition that matches the descriptor?
 			for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
 				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 				// Check qualifiers and type of the chain's delegate and the descriptor
 				if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-						RuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
+						DecoratorModuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
 						&& beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {
 					return true;
 				}
@@ -114,7 +116,7 @@ public class SimpleCDIAutowiringRules implements DecoratorAutowiringRules {
 			String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
 			// Check qualifiers and type of the chain's delegate and the descriptor
 			if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
-					RuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
+					DecoratorModuleUtils.createRuleBasedDescriptor(decoratedInjectionPoint.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
 					&& beanFactory.isTypeMatch(delegateName, decoratedInjectionPoint.getDependencyType())) {
 				return decoratorChain;
 			}
