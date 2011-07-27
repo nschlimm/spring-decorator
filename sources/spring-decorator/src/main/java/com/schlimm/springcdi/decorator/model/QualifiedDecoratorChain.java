@@ -103,4 +103,13 @@ public class QualifiedDecoratorChain {
 		return delegateBeanDefinitionHolder;
 	}
 
+	public boolean isKnownDecorator(String beanName) {
+		for (DecoratorInfo decorator : decorators) {
+			if (decorator.getDecoratorBeanDefinitionHolder().getBeanName().equals(beanName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

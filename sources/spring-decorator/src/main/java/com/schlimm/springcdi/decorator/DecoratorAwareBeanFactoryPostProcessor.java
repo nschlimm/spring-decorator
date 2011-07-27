@@ -127,7 +127,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 				decoratorAutowiringRules = new ResolverCDIAutowiringRules(chains, newResolver, beanFactory);
 			}
 			if (PROCESSOR.equals(getMode()) && decoratorAutowiringRules == null) {
-				decoratorAutowiringRules = new BeanPostProcessorCDIAutowiringRules(chains, newResolver, beanFactory);
+				decoratorAutowiringRules = new BeanPostProcessorCDIAutowiringRules(new DecoratorMetaDataBean(chains), newResolver, beanFactory);
 			}
 			newResolver.addPlugin(decoratorAutowiringRules);
 		}

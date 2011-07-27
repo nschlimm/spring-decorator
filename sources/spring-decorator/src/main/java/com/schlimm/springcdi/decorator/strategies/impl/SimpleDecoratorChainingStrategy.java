@@ -2,12 +2,12 @@ package com.schlimm.springcdi.decorator.strategies.impl;
 
 import java.lang.reflect.Field;
 
-import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.ReflectionUtils;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.DecoratorModuleUtils;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 import com.schlimm.springcdi.decorator.strategies.DecoratorChainingStrategy;
 
@@ -55,21 +55,7 @@ public class SimpleDecoratorChainingStrategy implements DecoratorChainingStrateg
 			targetBean = beanFactory.getBean(beanName);
 		}
 		if (AopUtils.isAopProxy(targetBean)) {
-			targetBean = locateAopTarget(beanName, targetBean);
-		}
-		return targetBean;
-	}
-
-	private Object locateAopTarget(String beanName, Object targetBean) {
-		Advised advised = (Advised) targetBean;
-		try {
-			targetBean = advised.getTargetSource().getTarget();
-			if (AopUtils.isAopProxy(targetBean)){
-				// Recursion if more then one AOP proxy applied
-				return locateAopTarget(beanName, targetBean);
-			}
-		} catch (Exception e) {
-			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not locate target bean: " + beanName, e);
+			targetBean = DecoratorModuleUtils.locateAopTarget(beanName, targetBean);
 		}
 		return targetBean;
 	}

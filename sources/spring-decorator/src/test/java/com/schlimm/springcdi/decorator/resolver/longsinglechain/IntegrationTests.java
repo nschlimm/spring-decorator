@@ -33,12 +33,12 @@ public class IntegrationTests {
 
 	@Test
 	public void testSecondDecorator() {
-		Assert.assertTrue(AnnotationUtils.findAnnotation(decoratedInterface.getDelegateObject().getClass(),Decorator.class) != null);
+		Assert.assertTrue(AnnotationUtils.findAnnotation(AopUtils.getTargetClass(decoratedInterface.getDelegateObject()),Decorator.class) != null);
 	}
 
 	@Test
 	public void testThirdDecorator() {
-		Assert.assertTrue(AnnotationUtils.findAnnotation(decoratedInterface.getDelegateObject().getDelegateObject().getClass(), Decorator.class) != null);
+		Assert.assertTrue(AnnotationUtils.findAnnotation(AopUtils.getTargetClass(decoratedInterface.getDelegateObject().getDelegateObject()), Decorator.class) != null);
 	}
 
 	@Test

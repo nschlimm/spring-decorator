@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.decorator.Decorator;
 
+import net.sf.cglib.proxy.Proxy;
+
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -13,6 +15,7 @@ import org.springframework.util.Assert;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
+import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
@@ -26,6 +29,8 @@ import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 public class BeanPostProcessorCDIAutowiringRules implements DecoratorAutowiringRules {
 
 	private List<QualifiedDecoratorChain> decoratorChains;
+	
+	private DecoratorMetaDataBean metaData;
 
 	private AutowireCandidateResolver resolver;
 
@@ -42,6 +47,13 @@ public class BeanPostProcessorCDIAutowiringRules implements DecoratorAutowiringR
 		this.beanFactory = beanFactory;
 	}
 
+	public BeanPostProcessorCDIAutowiringRules(DecoratorMetaDataBean metaData, AutowireCandidateResolver resolver, ConfigurableListableBeanFactory beanFactory) {
+		super();
+		this.metaData = metaData;
+		this.resolver = resolver;
+		this.beanFactory = beanFactory;
+	}
+
 	@Override
 	public boolean executeLogic(Object... arguments) {
 		Assert.isTrue(arguments.length == 2, "Expect two arguments!");
@@ -52,7 +64,7 @@ public class BeanPostProcessorCDIAutowiringRules implements DecoratorAutowiringR
 
 	@Override
 	public boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		if (DecoratorInfo.isDecorator(beanFactory.getType(bdHolder.getBeanName()))) {
+		if (metaData.isKnowDecorator(bdHolder.getBeanName())) {
 			return false;
 		}
 		return true;

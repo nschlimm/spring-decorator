@@ -54,4 +54,13 @@ public class DecoratorMetaDataBean {
 		return decoratorChains;
 	}
 
+	public boolean isKnowDecorator(String beanName) {
+		for (QualifiedDecoratorChain chain : decoratorChains) {
+			if (chain.isKnownDecorator(beanName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

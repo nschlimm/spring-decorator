@@ -5,6 +5,10 @@ import java.lang.reflect.Field;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 
 /**
@@ -25,5 +29,18 @@ public class DecoratorModuleUtils {
 		return desc;
 	}
 
-
+	public static Object locateAopTarget(String beanName, Object targetBean) {
+		Advised advised = (Advised) targetBean;
+		try {
+			targetBean = advised.getTargetSource().getTarget();
+			if (AopUtils.isAopProxy(targetBean)){
+				// Recursion if more then one AOP proxy applied
+				return locateAopTarget(beanName, targetBean);
+			}
+		} catch (Exception e) {
+			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not locate target bean: " + beanName, e);
+		}
+		return targetBean;
+	}
+	
 }

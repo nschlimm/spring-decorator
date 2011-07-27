@@ -18,6 +18,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+
 /**
  * Decorator meta-data model bean.
  * 
@@ -53,6 +55,21 @@ public class DecoratorInfo {
 		return AnnotationUtils.findAnnotation(candidateClass, Decorator.class) != null;
 	}
 
+	/**
+	 * Check if given class name is a decorator.
+	 * @param candidateClass class to check
+	 * @return true if contains @Decorator annotation
+	 */
+	public static boolean isDecorator(String candidateClassName) {
+		Class candidateClazz = null;
+		try {
+			candidateClazz = Class.forName(candidateClassName);
+		} catch (ClassNotFoundException e) {
+			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not locate decorator class name: " + candidateClassName, e);
+		}
+		return AnnotationUtils.findAnnotation(candidateClazz, Decorator.class) != null;
+	}
+	
 	/**
 	 * Check if the declaring class of the dependency (injection point) is a decorator
 	 * @param dependencyDescriptor dependency to check
