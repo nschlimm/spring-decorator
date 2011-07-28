@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class NotVeryUsefulAspect {
 
-	@Pointcut("execution(* com.schlimm.springcdi.decorator.resolver.longsinglechain.MyServiceInterface.*(..))")
+	@Pointcut("execution(* com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyServiceInterface.*(..))")
 	public void myDummyPointCut() {}
 	
 	@Before("myDummyPointCut()")
 	public void sayHello() {
-		System.out.println("Aspect Hello");
+//		System.out.println("Aspect Hello");
 	}
 }

@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-import javax.decorator.Delegate;
-
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -56,7 +54,7 @@ public class ResolverCDIAutowiringRules implements DecoratorAutowiringRules {
 	 */
 	public boolean applyDecoratorAutowiringRules(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		boolean isDelegateDescriptor = false;
-		if (descriptor.getField().getAnnotation(Delegate.class) != null)
+		if (DecoratorInfo.isDelegateField(descriptor.getField()))
 			isDelegateDescriptor = true;
 		if (descriptor instanceof IgnoreDecoratorAutowiringLogic || (!isDelegateDescriptor && !descriptor.getDependencyType().isInterface()))
 			return true;
@@ -93,7 +91,7 @@ public class ResolverCDIAutowiringRules implements DecoratorAutowiringRules {
 			// is there a chain that contains a target delegate bean definition that matches the descriptor?
 			for (QualifiedDecoratorChain decoratorChain : decoratorChains) {
 				String delegateName = decoratorChain.getDelegateBeanDefinitionHolder().getBeanName();
-				// Check qualifiers and type of the chain's delegate and the descriptor
+				// Check qualifiers and type of the chain's delegate vs. the descriptor
 				if (resolver.isAutowireCandidate(decoratorChain.getDelegateBeanDefinitionHolder(),
 						DecoratorModuleUtils.createRuleBasedDescriptor(descriptor.getField(), new Class[] { IgnoreDecoratorAutowiringLogic.class }))
 						&& beanFactory.isTypeMatch(delegateName, descriptor.getDependencyType())) {

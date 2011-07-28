@@ -5,12 +5,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.SimpleDecoratorResolutionStrategyTest;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_SimpleDecoratorResolutionStrategyTest;
 
 
 @ContextConfiguration(inheritLocations=true, locations="/test-context-decorator-resolver-aop.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-public class AOPEnabled_SimpleDecoratorResolutionStrategyTest extends SimpleDecoratorResolutionStrategyTest{
+public class AOPEnabled_SimpleDecoratorResolutionStrategyTest extends LongTwoQualified_SimpleDecoratorResolutionStrategyTest{
 
 }

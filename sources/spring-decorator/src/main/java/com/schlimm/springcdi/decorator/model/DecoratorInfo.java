@@ -19,6 +19,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
+import com.schlimm.springcdi.decorator.meta.DecoratorAnnotation;
+import com.schlimm.springcdi.decorator.meta.DelegateAnnotation;
 
 /**
  * Decorator meta-data model bean.
@@ -28,6 +30,7 @@ import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorExc
  */
 @SuppressWarnings("rawtypes")
 public class DecoratorInfo {
+
 
 	/**
 	 * The decorator class as defined in the bean definition
@@ -46,13 +49,29 @@ public class DecoratorInfo {
 
 	private static Class<? extends Annotation> decoratorAnnotationType = Decorator.class;
 
+	private static Class<? extends Annotation> delegateAnnotationType = Delegate.class;
+	
+	private static Class<? extends Annotation> decoratorMetaAnnotationType = DecoratorAnnotation.class;
+	
+	private static Class<? extends Annotation> delegateMetaAnnotationType = DelegateAnnotation.class;
+	
+	
 	/**
 	 * Check if given class is a decorator.
 	 * @param candidateClass class to check
-	 * @return true if contains @Decorator annotation
+	 * @return true if contains @Decorator annotation of @DecoratorAnnotation meta-annotation
 	 */
 	public static boolean isDecorator(Class candidateClass) {
-		return AnnotationUtils.findAnnotation(candidateClass, Decorator.class) != null;
+		if (AnnotationUtils.findAnnotation(candidateClass, decoratorAnnotationType) != null) {
+			return true;
+		}
+		Annotation[] annotations = candidateClass.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation.annotationType().isAnnotationPresent(decoratorMetaAnnotationType)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -67,7 +86,7 @@ public class DecoratorInfo {
 		} catch (ClassNotFoundException e) {
 			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not locate decorator class name: " + candidateClassName, e);
 		}
-		return AnnotationUtils.findAnnotation(candidateClazz, Decorator.class) != null;
+		return isDecorator(candidateClazz);
 	}
 	
 	/**
@@ -76,7 +95,7 @@ public class DecoratorInfo {
 	 * @return true if declaring class is a decorator
 	 */
 	public static boolean isDecorator(DependencyDescriptor dependencyDescriptor) {
-		if (AnnotationUtils.findAnnotation(dependencyDescriptor.getField().getDeclaringClass(), Decorator.class) != null) {
+		if (isDecorator(dependencyDescriptor.getField().getDeclaringClass())) {
 			return true;
 		}
 		return false;
@@ -91,9 +110,26 @@ public class DecoratorInfo {
 		Map<String, Object> attributes = bd.getMetadata().getAnnotationAttributes(decoratorAnnotationType.getName());
 		if (attributes != null)
 			return true;
+		attributes = bd.getMetadata().getAnnotationAttributes(decoratorMetaAnnotationType.getName());
+		if (attributes!=null) {
+			return true;
+		}
 		return false;
 	}
 
+	public static boolean isDelegateField(Field field) {
+		if (field.isAnnotationPresent(delegateAnnotationType)) {
+			return true;
+		}
+		Annotation[] anns = field.getAnnotations();
+		for (Annotation annotation : anns) {
+			if (annotation.annotationType().isAnnotationPresent(delegateMetaAnnotationType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Constructor.
 	 * @param beanName bean name of the decorator
@@ -107,7 +143,7 @@ public class DecoratorInfo {
 		ReflectionUtils.doWithFields(decoratorClass, new FieldCallback() {
 			@Override
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-				if (field.isAnnotationPresent(Delegate.class)) {
+				if (isDelegateField(field)) {
 					delegateFields.add(new DelegateField(field, new DependencyDescriptor(field, false)));
 				}
 			}

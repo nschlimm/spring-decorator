@@ -21,10 +21,17 @@ public class DelegatingInterceptor implements MethodInterceptor {
 	 * The decorator chain to delegate to
 	 */
 	private Object decoratorChain;
+	
+	private Method proxyInspectorGetInterceptorTarget = null;
 
 	public DelegatingInterceptor(Object decoratorChain) {
 		super();
 		this.decoratorChain = decoratorChain;
+		try {
+			proxyInspectorGetInterceptorTarget = ProxyInspector.class.getMethod("getInterceptorTarget", new Class[]{});
+		} catch (Exception e) {
+			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not instantiate decorator proxy!", e);
+		}
 	}
 
 	/**
@@ -34,6 +41,9 @@ public class DelegatingInterceptor implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Object retVal = null;
+		if (invocation.getMethod().equals(proxyInspectorGetInterceptorTarget)) {
+			return decoratorChain;
+		}
 		try {
 			Method targetMethod = ReflectionUtils.findMethod(this.decoratorChain.getClass(), invocation.getMethod().getName(), invocation.getMethod().getParameterTypes());
 			if (targetMethod == null) {

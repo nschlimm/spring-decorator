@@ -5,11 +5,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.DecoratorAwareBeanFactoryPostProcessorTest;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_DecoratorAwareBeanFactoryPostProcessorTest;
 
 @ContextConfiguration(inheritLocations=true, locations="/test-context-decorator-resolver-aop.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-public class AOPEnabled_DecoratorAwareBeanFactoryPostProcessorTest extends DecoratorAwareBeanFactoryPostProcessorTest{
+public class AOPEnabled_DecoratorAwareBeanFactoryPostProcessorTest extends LongTwoQualified_DecoratorAwareBeanFactoryPostProcessorTest{
 
 }

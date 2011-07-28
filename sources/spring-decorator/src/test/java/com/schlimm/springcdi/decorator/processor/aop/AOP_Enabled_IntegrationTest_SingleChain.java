@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTest_SingleChain;
-import com.schlimm.springcdi.decorator.resolver.longsinglechain.MyDecorator;
+import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
 
 
 
@@ -27,13 +27,13 @@ public class AOP_Enabled_IntegrationTest_SingleChain extends IntegrationTest_Sin
 		Object decorator1 = decoratedInterface.getDelegateObject();
 		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
 		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
-		if (Proxy.isProxyClass(decorator1.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator1))) {
+		if (Proxy.isProxyClass(decorator1.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator1))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator1)); return;
 		}
-		if (Proxy.isProxyClass(decorator2.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator2))) {
+		if (Proxy.isProxyClass(decorator2.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator2))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator2)); return;
 		}
-		if (Proxy.isProxyClass(decorator3.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator3))) {
+		if (Proxy.isProxyClass(decorator3.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator3))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator3)); return;
 		}
 		TestCase.fail();

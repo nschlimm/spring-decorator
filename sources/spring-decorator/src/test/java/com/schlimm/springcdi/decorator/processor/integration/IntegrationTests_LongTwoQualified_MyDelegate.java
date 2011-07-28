@@ -9,17 +9,17 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.IntegrationTests_MyDelegate;
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.MyDelegate;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_IntegrationTests_MyDelegate;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_MyDelegate;
 
 @ContextConfiguration(inheritLocations=false, locations="/test-context-decorator-processor-long-two-qualified-chains-integration.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-public class IntegrationTests_LongTwoQualified_MyDelegate extends IntegrationTests_MyDelegate {
+public class IntegrationTests_LongTwoQualified_MyDelegate extends LongTwoQualified_IntegrationTests_MyDelegate {
 
 	@Test
 	public void testInjectedObject() {
-		Assert.assertTrue(MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
+		Assert.assertTrue(LongTwoQualified_MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
 	}
 	
 }

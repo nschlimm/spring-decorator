@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoChains_AnotherDelegate;
-import com.schlimm.springcdi.decorator.resolver.longtwochains.AnotherDelegate;
+import com.schlimm.springcdi.decorator.resolver.longtwochains.LongTwoChains_AnotherDelegate;
 
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop.xml", "/test-context-decorator-processor-long-two-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -19,7 +19,7 @@ public class AOP_Enabled_IntegrationTests_LongTwoChains_AnotherDelegate extends 
 	
 	@Test
 	public void testInjectedObject() {
-		Assert.assertTrue(AnotherDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
+		Assert.assertTrue(LongTwoChains_AnotherDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
 	}
 
 }

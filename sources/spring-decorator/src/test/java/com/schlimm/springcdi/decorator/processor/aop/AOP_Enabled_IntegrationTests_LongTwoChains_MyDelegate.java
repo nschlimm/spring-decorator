@@ -13,8 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoChains_MyDelegate;
-import com.schlimm.springcdi.decorator.resolver.longsinglechain.MyDecorator;
-import com.schlimm.springcdi.decorator.resolver.longsinglechain.MyDelegate;
+import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
+import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDelegate;
 
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop.xml", "/test-context-decorator-processor-long-two-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +23,7 @@ public class AOP_Enabled_IntegrationTests_LongTwoChains_MyDelegate extends Integ
 	
 	@Test
 	public void testInjectedObject() {
-		Assert.assertTrue(MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
+		Assert.assertTrue(LongSingleChain_MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
 	}
 
 	@Test
@@ -31,13 +31,13 @@ public class AOP_Enabled_IntegrationTests_LongTwoChains_MyDelegate extends Integ
 		Object decorator1 = decoratedInterface.getDelegateObject();
 		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
 		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
-		if (Proxy.isProxyClass(decorator1.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator1))) {
+		if (Proxy.isProxyClass(decorator1.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator1))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator1)); return;
 		}
-		if (Proxy.isProxyClass(decorator2.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator2))) {
+		if (Proxy.isProxyClass(decorator2.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator2))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator2)); return;
 		}
-		if (Proxy.isProxyClass(decorator3.getClass())&&MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator3))) {
+		if (Proxy.isProxyClass(decorator3.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator3))) {
 			Assert.assertTrue(AopUtils.isJdkDynamicProxy(decorator3)); return;
 		}
 		TestCase.fail();

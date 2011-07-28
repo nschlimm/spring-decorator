@@ -11,8 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoQualified_MyDelegate;
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.MyDecorator;
-import com.schlimm.springcdi.decorator.resolver.longtwoqualified.MyDelegate;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_MyDecorator;
+import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_MyDelegate;
 
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop-cg.xml", "/test-context-decorator-processor-long-two-qualified-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,17 +21,17 @@ public class AOP_CGLIB_Enabled_IntegrationTests_LongTwoQualified_MyDelegate exte
 
 	@Test
 	public void testInjectedObject() {
-		Assert.assertTrue(MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
+		Assert.assertTrue(LongTwoQualified_MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
 	}
 	
 	@Test
 	public void testProxyType() {
 		Object decorator1 = decoratedInterface.getDelegateObject();
 		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
-		if (MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
+		if (LongTwoQualified_MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
 			Assert.assertTrue(AopUtils.isCglibProxy(decorator1)); return;
 		}
-		if (MyDecorator.class.isAssignableFrom(decorator2.getClass())) {
+		if (LongTwoQualified_MyDecorator.class.isAssignableFrom(decorator2.getClass())) {
 			Assert.assertTrue(AopUtils.isCglibProxy(decorator2)); return;
 		}
 		TestCase.fail();

@@ -59,7 +59,7 @@ public class DecoratorAwareBeanPostProcessor implements BeanPostProcessor, Initi
 		final SimpleBeanTargetSource targetSource = new SimpleBeanTargetSource() {{setTargetBeanName(beanName); setTargetClass(bean.getClass()); setBeanFactory(beanFactory);}};
 		ProxyFactory pf = new ProxyFactory() {{setTargetSource(targetSource); setProxyTargetClass(true);}};
 		DelegatingInterceptor interceptor = new DelegatingInterceptor(chainingStrategy.getChainedDecorators(beanFactory, metaData.getQualifiedDecoratorChain(beanName), bean));
-		pf.addAdvice(interceptor);
+		pf.addAdvice(interceptor); pf.addInterface(ProxyInspector.class);
 		Object proxy = pf.getProxy();
 		return proxy;
 	}

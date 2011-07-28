@@ -11,8 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoChains_MyDelegate;
-import com.schlimm.springcdi.decorator.resolver.longsinglechain.MyDecorator;
-import com.schlimm.springcdi.decorator.resolver.longsinglechain.MyDelegate;
+import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
+import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDelegate;
 
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop-cg.xml", "/test-context-decorator-processor-long-two-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,7 +21,7 @@ public class AOP_CGLIB_Enabled_IntegrationTests_LongTwoChains_MyDelegate extends
 	
 	@Test
 	public void testInjectedObject() {
-		Assert.assertTrue(MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
+		Assert.assertTrue(LongSingleChain_MyDelegate.class.isAssignableFrom(AopUtils.getTargetClass(decoratedInterface)));
 	}
 
 	@Test
@@ -29,13 +29,13 @@ public class AOP_CGLIB_Enabled_IntegrationTests_LongTwoChains_MyDelegate extends
 		Object decorator1 = decoratedInterface.getDelegateObject();
 		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
 		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
-		if (MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
+		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
 			Assert.assertTrue(AopUtils.isCglibProxy(decorator1)); return;
 		}
-		if (MyDecorator.class.isAssignableFrom(decorator2.getClass())) {
+		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator2.getClass())) {
 			Assert.assertTrue(AopUtils.isCglibProxy(decorator2)); return;
 		}
-		if (MyDecorator.class.isAssignableFrom(decorator3.getClass())) {
+		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator3.getClass())) {
 			Assert.assertTrue(AopUtils.isCglibProxy(decorator2)); return;
 		}
 		TestCase.fail();
