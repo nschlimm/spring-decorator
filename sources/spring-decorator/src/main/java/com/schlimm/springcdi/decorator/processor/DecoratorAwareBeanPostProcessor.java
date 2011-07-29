@@ -17,7 +17,7 @@ import com.schlimm.springcdi.decorator.strategies.impl.SimpleDecoratorChainingSt
  * {@link BeanPostProcessor} that applies the JSR-299 decorator pattern to the Spring beans.
  * 
  * If the processed bean is a decorated bean, then this {@link BeanPostProcessor} returns a CGLIB proxy for that bean. Uses a
- * {@link DelegatingInterceptor} to delegate calls to that given delegate bean to the decorator chain.
+ * {@link DelegateMethodInterceptor} to delegate calls to that given delegate bean to the decorator chain.
  * 
  * @author Niklas Schlimm
  * 
@@ -58,8 +58,8 @@ public class DecoratorAwareBeanPostProcessor implements BeanPostProcessor, Initi
 	public Object buildDelegateProxy(final Object bean, final String beanName) {
 		final SimpleBeanTargetSource targetSource = new SimpleBeanTargetSource() {{setTargetBeanName(beanName); setTargetClass(bean.getClass()); setBeanFactory(beanFactory);}};
 		ProxyFactory pf = new ProxyFactory() {{setTargetSource(targetSource); setProxyTargetClass(true);}};
-		DelegatingInterceptor interceptor = new DelegatingInterceptor(chainingStrategy.getChainedDecorators(beanFactory, metaData.getQualifiedDecoratorChain(beanName), bean));
-		pf.addAdvice(interceptor); pf.addInterface(ProxyInspector.class);
+		DelegateMethodInterceptor interceptor = new DelegateMethodInterceptor(chainingStrategy.getChainedDecorators(beanFactory, metaData.getQualifiedDecoratorChain(beanName), bean));
+		pf.addAdvice(interceptor); pf.addInterface(DelegateProxyInspector.class);
 		Object proxy = pf.getProxy();
 		return proxy;
 	}

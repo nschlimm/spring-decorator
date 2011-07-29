@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-import com.schlimm.springcdi.decorator.processor.ProxyInspector;
+import com.schlimm.springcdi.decorator.processor.DelegateProxyInspector;
 
 
 
@@ -45,7 +45,7 @@ public class Meta_SimpleDelegateAnnotationTest {
 	
 	@Test
 	public void testFirstDecorator() {
-		ProxyInspector pi = (ProxyInspector)decoratedInterface;
+		DelegateProxyInspector pi = (DelegateProxyInspector)decoratedInterface;
 		Assert.isTrue(pi.getInterceptorTarget().getClass().isAssignableFrom(Meta_MyDecorator.class));
 	}
 	

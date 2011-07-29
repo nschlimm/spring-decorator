@@ -10,12 +10,12 @@ import org.springframework.util.ReflectionUtils;
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 
 /**
- * {@link MethodInterceptor} that delegates all method calls to the registered delegate.
+ * {@link MethodInterceptor} that delegates all method calls to the registered decorator chain.
  * 
  * @author Niklas Schlimm
  * 
  */
-public class DelegatingInterceptor implements MethodInterceptor {
+public class DelegateMethodInterceptor implements MethodInterceptor {
 
 	/**
 	 * The decorator chain to delegate to
@@ -24,11 +24,11 @@ public class DelegatingInterceptor implements MethodInterceptor {
 	
 	private Method proxyInspectorGetInterceptorTarget = null;
 
-	public DelegatingInterceptor(Object decoratorChain) {
+	public DelegateMethodInterceptor(Object decoratorChain) {
 		super();
 		this.decoratorChain = decoratorChain;
 		try {
-			proxyInspectorGetInterceptorTarget = ProxyInspector.class.getMethod("getInterceptorTarget", new Class[]{});
+			proxyInspectorGetInterceptorTarget = DelegateProxyInspector.class.getMethod("getInterceptorTarget", new Class[]{});
 		} catch (Exception e) {
 			throw new DecoratorAwareBeanFactoryPostProcessorException("Could not instantiate decorator proxy!", e);
 		}
