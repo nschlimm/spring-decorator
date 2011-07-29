@@ -17,6 +17,12 @@ import com.schlimm.springcdi.decorator.resolver.aop.NotVeryUsefulAspect;
 import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_MyDecorator;
 import com.schlimm.springcdi.decorator.resolver.longtwoqualified.LongTwoQualified_MyDelegate;
 
+/**
+ * Test Spring AOP JDK Dynamic Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop.xml", "/test-context-decorator-processor-long-two-qualified-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext

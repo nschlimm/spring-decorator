@@ -12,6 +12,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoChains_AnotherDelegate;
 import com.schlimm.springcdi.decorator.resolver.longtwochains.LongTwoChains_AnotherDelegate;
 
+/**
+ * Test Spring AOP JDK Dynamic Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop.xml", "/test-context-decorator-processor-long-two-chains-integration.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext

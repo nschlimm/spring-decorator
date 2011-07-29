@@ -18,6 +18,12 @@ import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_
 
 
 
+/**
+ * Test Spring AOP JDK Dynamic Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @ContextConfiguration(inheritLocations=false, locations={"/test-context-decorator-processor-aop.xml", "/test-context-decorator-processor-long-single-chain.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext

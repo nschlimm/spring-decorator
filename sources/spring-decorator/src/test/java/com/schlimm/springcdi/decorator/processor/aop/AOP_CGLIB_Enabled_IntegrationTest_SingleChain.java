@@ -12,10 +12,19 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.schlimm.springcdi.decorator.processor.DelegateProxyInspector;
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTest_SingleChain;
 import com.schlimm.springcdi.decorator.resolver.aop.NotVeryUsefulAspect;
 import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
 
+/**
+ * Test Spring AOP CGLIB Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * Single decorator chain, three decorators.
+ * 
+ * @author Niklas Schlimm
+ *
+ */
 @ContextConfiguration(inheritLocations = false, locations = { "/test-context-decorator-processor-aop-cg.xml", "/test-context-decorator-processor-long-single-chain.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
@@ -26,9 +35,10 @@ public class AOP_CGLIB_Enabled_IntegrationTest_SingleChain extends IntegrationTe
 	 */
 	@Test
 	public void testProxyType() {
-		Object decorator1 = decoratedInterface.getDelegateObject();
-		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
-		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
+		DelegateProxyInspector inspector = (DelegateProxyInspector)decoratedInterface;
+		Object decorator1 = inspector.getInterceptorTarget();
+		Object decorator2 = decoratedInterface.getDelegateObject();
+		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject();
 		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
 			Assert.assertTrue(checkCGLIBProxy(decorator1));
 			return;
@@ -48,14 +58,14 @@ public class AOP_CGLIB_Enabled_IntegrationTest_SingleChain extends IntegrationTe
 		Advised advised = (Advised) decorator;
 		AspectJMethodBeforeAdvice beforeAdvice = (AspectJMethodBeforeAdvice) advised.getAdvisors()[1].getAdvice();
 		return AopUtils.isCglibProxy(decorator) && advised.getAdvisors()[1].getAdvice().getClass().equals(AspectJMethodBeforeAdvice.class)
-				&& beforeAdvice.getAspectName().startsWith("com.schlimm.springcdi.");
+				&& beforeAdvice.getAspectName().contains("NotVeryUsefulAspect");
 	}
 
 	public static boolean checkJDKProxy(Object decorator) {
 		Advised advised = (Advised) decorator;
 		AspectJMethodBeforeAdvice beforeAdvice = (AspectJMethodBeforeAdvice) advised.getAdvisors()[1].getAdvice();
 		return AopUtils.isJdkDynamicProxy(decorator) && advised.getAdvisors()[1].getAdvice().getClass().equals(AspectJMethodBeforeAdvice.class)
-		&& beforeAdvice.getAspectName().startsWith("com.schlimm.springcdi.");
+		&& beforeAdvice.getAspectName().contains("NotVeryUsefulAspect");
 	}
 	
 }
