@@ -7,11 +7,14 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.aop.aspectj.AspectJMethodBeforeAdvice;
+import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.schlimm.springcdi.decorator.processor.DelegateProxyInspector;
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTest_SingleChain;
 import com.schlimm.springcdi.decorator.resolver.aop.NotVeryUsefulAspect;
 import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
@@ -20,6 +23,8 @@ import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_
 
 /**
  * Test Spring AOP JDK Dynamic Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * Single decorator chain, three decorators
  * 
  * @author Niklas Schlimm
  *
@@ -34,19 +39,27 @@ public class AOP_Enabled_IntegrationTest_SingleChain extends IntegrationTest_Sin
 	 */
 	@Test
 	public void testProxyType() {
-		Object decorator1 = decoratedInterface.getDelegateObject();
-		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
-		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
+		DelegateProxyInspector inspector = (DelegateProxyInspector)decoratedInterface;
+		Object decorator1 = inspector.getInterceptorTarget();
+		Object decorator2 = decoratedInterface.getDelegateObject();
+		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject();
 		if (Proxy.isProxyClass(decorator1.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator1))) {
-			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkJDKProxy(decorator1)); return;
+			Assert.assertTrue(checkJDKProxy(decorator1)); return;
 		}
 		if (Proxy.isProxyClass(decorator2.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator2))) {
-			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkJDKProxy(decorator2)); return;
+			Assert.assertTrue(checkJDKProxy(decorator2)); return;
 		}
 		if (Proxy.isProxyClass(decorator3.getClass())&&LongSingleChain_MyDecorator.class.isAssignableFrom(AopUtils.getTargetClass(decorator3))) {
-			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkJDKProxy(decorator3)); return;
+			Assert.assertTrue(checkJDKProxy(decorator3)); return;
 		}
 		TestCase.fail();
+	}
+	
+	public static boolean checkJDKProxy(Object decorator) {
+		Advised advised = (Advised) decorator;
+		AspectJMethodBeforeAdvice beforeAdvice = (AspectJMethodBeforeAdvice) advised.getAdvisors()[1].getAdvice();
+		return AopUtils.isJdkDynamicProxy(decorator) && advised.getAdvisors()[1].getAdvice().getClass().equals(AspectJMethodBeforeAdvice.class)
+		&& beforeAdvice.getAspectName().contains("NotVeryUsefulAspect");
 	}
 	
 }

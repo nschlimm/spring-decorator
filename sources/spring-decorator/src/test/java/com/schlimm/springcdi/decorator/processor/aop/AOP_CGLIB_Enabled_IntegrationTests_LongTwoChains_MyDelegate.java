@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.schlimm.springcdi.decorator.processor.DelegateProxyInspector;
 import com.schlimm.springcdi.decorator.processor.integration.IntegrationTests_LongTwoChains_MyDelegate;
 import com.schlimm.springcdi.decorator.resolver.aop.NotVeryUsefulAspect;
 import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_MyDecorator;
@@ -17,6 +18,8 @@ import com.schlimm.springcdi.decorator.resolver.longsinglechain.LongSingleChain_
 
 /**
  * Test Spring AOP CGLIB Proxies compatibility of Spring-CDI decorator module.
+ * 
+ * Two decorator chains, three decorators each
  * 
  * @author Niklas Schlimm
  *
@@ -39,17 +42,18 @@ public class AOP_CGLIB_Enabled_IntegrationTests_LongTwoChains_MyDelegate extends
 	 */
 	@Test
 	public void testProxyType() {
-		Object decorator1 = decoratedInterface.getDelegateObject();
-		Object decorator2 = decoratedInterface.getDelegateObject().getDelegateObject();
-		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject().getDelegateObject();
+		DelegateProxyInspector inspector = (DelegateProxyInspector)decoratedInterface;
+		Object decorator1 = inspector.getInterceptorTarget();
+		Object decorator2 = decoratedInterface.getDelegateObject();
+		Object decorator3 = decoratedInterface.getDelegateObject().getDelegateObject();
 		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator1.getClass())) {
 			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkCGLIBProxy(decorator1)); return;
 		}
 		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator2.getClass())) {
-			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkCGLIBProxy(decorator1)); return;
+			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkCGLIBProxy(decorator2)); return;
 		}
 		if (LongSingleChain_MyDecorator.class.isAssignableFrom(decorator3.getClass())) {
-			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkCGLIBProxy(decorator1)); return;
+			Assert.assertTrue(AOP_CGLIB_Enabled_IntegrationTest_SingleChain.checkCGLIBProxy(decorator3)); return;
 		}
 		TestCase.fail();
 	}

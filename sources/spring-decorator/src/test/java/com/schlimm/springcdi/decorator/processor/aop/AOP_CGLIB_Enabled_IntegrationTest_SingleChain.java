@@ -61,11 +61,4 @@ public class AOP_CGLIB_Enabled_IntegrationTest_SingleChain extends IntegrationTe
 				&& beforeAdvice.getAspectName().contains("NotVeryUsefulAspect");
 	}
 
-	public static boolean checkJDKProxy(Object decorator) {
-		Advised advised = (Advised) decorator;
-		AspectJMethodBeforeAdvice beforeAdvice = (AspectJMethodBeforeAdvice) advised.getAdvisors()[1].getAdvice();
-		return AopUtils.isJdkDynamicProxy(decorator) && advised.getAdvisors()[1].getAdvice().getClass().equals(AspectJMethodBeforeAdvice.class)
-		&& beforeAdvice.getAspectName().contains("NotVeryUsefulAspect");
-	}
-	
 }
