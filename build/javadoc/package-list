@@ -1,0 +1,9 @@
+com.schlimm.springcdi
+com.schlimm.springcdi.decorator
+com.schlimm.springcdi.decorator.meta
+com.schlimm.springcdi.decorator.model
+com.schlimm.springcdi.decorator.processor
+com.schlimm.springcdi.decorator.resolver
+com.schlimm.springcdi.decorator.resolver.rules
+com.schlimm.springcdi.decorator.strategies
+com.schlimm.springcdi.decorator.strategies.impl
