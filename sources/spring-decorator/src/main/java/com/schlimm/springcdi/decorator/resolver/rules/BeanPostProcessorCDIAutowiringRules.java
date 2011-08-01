@@ -19,7 +19,7 @@ import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
- * Class implements the wiring rules for autowiring CDI decorators when {@link DecoratorAwareBeanFactoryPostProcessorException}
+ * Class implements the wiring rules for autowiring CDI decorators when {@link DecoratorAwareBeanFactoryPostProcessor}
  * mode is set to 'processor'.
  * 
  * @author Niklas Schlimm
