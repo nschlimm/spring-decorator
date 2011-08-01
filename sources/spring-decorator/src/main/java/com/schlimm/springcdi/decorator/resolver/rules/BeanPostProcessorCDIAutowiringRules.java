@@ -13,13 +13,14 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
 import com.schlimm.springcdi.decorator.model.QualifiedDecoratorChain;
 
 /**
- * Class implements the wiring rules for autowiring CDI decorators when {@link DecoratorAwareBeanFactoryPostProcessorException}
+ * Class implements the wiring rules for autowiring CDI decorators when {@link DecoratorAwareBeanFactoryPostProcessor}
  * mode is set to 'processor'.
  * 
  * @author Niklas Schlimm
