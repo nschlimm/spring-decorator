@@ -13,6 +13,7 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
+import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessor;
 import com.schlimm.springcdi.decorator.DecoratorAwareBeanFactoryPostProcessorException;
 import com.schlimm.springcdi.decorator.model.DecoratorInfo;
 import com.schlimm.springcdi.decorator.model.DecoratorMetaDataBean;
