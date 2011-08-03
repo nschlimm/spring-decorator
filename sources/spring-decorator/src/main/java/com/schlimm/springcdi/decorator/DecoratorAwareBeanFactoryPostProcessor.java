@@ -151,7 +151,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			decoratorInfos.add(newDecoratorInfo);
 			String delegate = delegateResolutionStrategy.getRegisteredDelegate(beanFactory, newDecoratorInfo);
 			QualifiedDecoratorChain chain = null;
-			// Gibt es schon eine chain für den delegate?
+			// Is there already a chain for that delegate?
 			for (QualifiedDecoratorChain qualifiedDecoratorChain : chains) {
 				if (qualifiedDecoratorChain.getDelegateBeanDefinitionHolder().getBeanName().equals(delegate)) {
 					chain = qualifiedDecoratorChain;
