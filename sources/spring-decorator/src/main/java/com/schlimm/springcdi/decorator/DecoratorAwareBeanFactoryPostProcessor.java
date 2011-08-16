@@ -87,7 +87,7 @@ public class DecoratorAwareBeanFactoryPostProcessor implements BeanFactoryPostPr
 			((DefaultListableBeanFactory) beanFactory).registerBeanDefinition(DECORATOR_POSTPROCESSOR_NAME, BeanDefinitionBuilder.rootBeanDefinition(DecoratorAwareBeanPostProcessor.class)
 					.getBeanDefinition());
 			if (beanFactory.getBeanNamesForType(DecoratorAwareBeanPostProcessor.class) == null) {
-				throw new DecoratorAwareBeanFactoryPostProcessorException("Mode 'resolver' requires DecoratorAwareBeanPostProcessor registered!");
+				throw new DecoratorAwareBeanFactoryPostProcessorException("Mode 'processor' requires DecoratorAwareBeanPostProcessor registered!");
 			}
 		}
 
