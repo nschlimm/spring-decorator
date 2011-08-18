@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.aop</artifactId>
+			<artifactId>spring-aop</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 
